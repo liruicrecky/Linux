@@ -49,11 +49,9 @@ int main(int argc, char *argv[])
 			{
 				clientAccept = accept(clientEpollEvent[cnt].data.fd, NULL, NULL);
 				printf("a new client online!\n");
-				
-				//set none-block
-				setNoneBlock(clientAccept);
+
 				memset(&serverEpollEvent, 0, sizeof(serverEpollEvent));
-				serverEpollEvent.events = EPOLLIN | EPOLLET;
+				serverEpollEvent.events = EPOLLIN;
 				serverEpollEvent.data.fd = clientAccept;
 
 				if(epoll_ctl(epoll_fd, EPOLL_CTL_ADD, clientAccept, &serverEpollEvent) == -1)
@@ -65,27 +63,15 @@ int main(int argc, char *argv[])
 			}
 			else if(clientEpollEvent[cnt].events & EPOLLIN)
 			{
-				int recvSum = 0;
-				int recvStat;
 				memset(buf, 0, 1024);
-				while(1)
+				if(frecvBuf(clientEpollEvent[cnt].data.fd, buf, 1024) == 0)
 				{
-					recvStat = recv(clientEpollEvent[cnt].data.fd, buf + recvSum, 1024 - recvSum, 0);
-					if(recvStat == 0)
-					{
-						printf("a client exit\n");
-						epoll_ctl(epoll_fd, EPOLL_CTL_DEL, clientEpollEvent[cnt].data.fd, NULL);
-						break;
-					}
-					else if(recvStat > 0)
-					{
-						recvSum += recvStat;
-					}
-					else if(recvStat == -1 && erron == EAGAIN)
-					{
-						printf("client says:%s", buf);
-						break;
-					}
+					printf("a client exit\n");
+					epoll_ctl(epoll_fd, EPOLL_CTL_DEL, clientEpollEvent[cnt].data.fd, NULL);
+				}
+				else
+				{
+					printf("client says:%s", buf);
 				}
 			}
 		}

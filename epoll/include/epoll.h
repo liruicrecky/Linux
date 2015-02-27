@@ -17,12 +17,15 @@
 #include<sys/socket.h>
 #include<netinet/in.h>
 #include<arpa/inet.h>
+#include<errno.h>
+#include<fcntl.h>
 
 int initServerSocket(char *ip, int port);
 int serverSockAccept(int serverSocket);
 int clientConnectServer(char *ip, int port);
 unsigned long fsendBuf(int socket, char *buf, unsigned long size);
 unsigned long frecvBuf(int socket, char *buf, unsigned long size);
+void setNoneBlock(int sfd);
 
 #endif
 

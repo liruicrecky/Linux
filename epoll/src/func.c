@@ -96,6 +96,15 @@ int clientConnectServer(char *ip, int port)
 	return clientSocket;
 }
 
+//setnon-block
+
+void setNoneBlock(int sfd)
+{
+	int fileFL = fcntl(sfd, F_GETFL);
+	fileFL = fileFL | O_NONBLOCK;
+	fcntl(sfd, F_SETFL, fileFL);
+}
+
 unsigned long fsendBuf(int socket, char *buf, unsigned long size)
 {
 	unsigned long sendSum = 0;
