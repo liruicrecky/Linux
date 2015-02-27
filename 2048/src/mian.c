@@ -22,12 +22,39 @@ int main(int argc, char *argv[])
 	refineArray(fourPad, ninePad);
 	refreshPad(ninePad);
 
-	char buf[5];
+	char buf[10];
+	char tmp;
+	int dire;
+	int cnt;
 
-	while(memset(buf, 0, 5), fgets(buf, 5, stdin) != NULL)
+	while(memset(buf, 0, 10), fgets(buf, 10, stdin) != NULL)
 	{
-
-
+		cnt = -1;
+		sscanf(buf, "%c", &tmp);
+		dire = tmp;
+		while(cnt != 0)
+		{
+			cnt = mergeNum(fourPad, dire);
+			if(cnt == 0)
+				continue;
+		}
+		randomNum(fourPad);
+		refineArray(fourPad, ninePad);
+		refreshPad(ninePad);
+		if(checkWin(fourPad) == 1)
+		{
+			printf("you win the game\n");
+			break;
+		}
+		else if(checkWin(fourPad) == -1)
+		{
+			printf("you lose the game!\n");
+			break;
+		}
+		else if(checkWin(fourPad) == 0)
+		{
+			continue;
+		}
 	}
 
 

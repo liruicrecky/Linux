@@ -86,6 +86,13 @@ int connectServer(char *ip, int port)
 	return clientSock;
 }
 
+void setNoneBlock(int sfd)
+{
+	int fileSfd = fcntl(sfd, F_GETFL);
+	fileSfd = fileSfd | O_NONBLOCK;
+	fcntl(sfd, F_SETFL, fileSfd);
+}
+
 unsigned long fsendBuf(int sock, char *buf, unsigned long len)
 {
 	unsigned long sendSum = 0;
@@ -102,5 +109,28 @@ unsigned long frecvBuf(int sock, char *buf, unsigned long len)
 		recvSum += recv(sock, buf + recvSum, len - recvSum, 0);
 
 	return recvSum;
+}
+
+unsigned long frecvNonBlock(int sock, char *buf)
+{
+	unsigned long recvSum = 0;
+	unsigned long recvStat;
+	while(1)
+	{
+		recvStat = recv(sock, buf + recvSum, 10240 - recvSum, 0);
+		if(recvStat == 0)
+		{
+			break;
+		}
+		else if(recvStat > 0)
+		{
+			recvSum += recvStat;
+		}
+		else if(recvStat == -1 && errno == EAGAIN)
+		{
+			return recvSum;
+			break;
+		}
+	}
 }
 

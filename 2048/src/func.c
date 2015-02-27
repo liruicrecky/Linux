@@ -131,14 +131,219 @@ void initPad(int *pad)
 	}
 }
 
-void mergeNum(int *fourArr, int dire)
+int mergeNum(int *fourArr, int dire)
 {
-	char inputDire = dire
-	if(direction == 24)
+	int *fourPad = fourArr;
+	int i, j;
+	int tmpi, tmpj;
+	int cnt = 0;
+
+	//up
+	if(dire == 'i')
+	{
+		for(i = 1;i < 4;i++)
+		{
+			for(j = 0;j < 4;j++)
+			{
+				if(fourPad[i * 4 + j] != 0)
+				{
+					if(fourPad[(i - 1) * 4 + j] == 0)
+					{
+						tmpi = i - 1;
+						while(fourPad[tmpi * 4 + j] == 0)
+						{
+							fourPad[(tmpi - 1) * 4 + j] = fourPad[tmpi * 4 + j];
+							fourPad[tmpi * 4 + j] = 0;
+							--tmpi;
+							if(tmpi == -1)
+								break;
+						}
+						++cnt;
+					}
+					else if(fourPad[(i - 1) * 4 + j] == fourPad[i * 4 + j])
+					{
+						fourPad[(i - 1) * 4 + j] *= 2;
+						fourPad[i * 4 + j] = 0;
+						++cnt;
+					}
+					else if(fourPad[(i - 1) * 4 + j] != fourPad[i * 4 + j])
+					{
+						continue;
+					}	
+				}
+			}
+		}
+	}
+	//down
+	else if(dire == 'k')
+	{
+		for(i = 2;i >= 0;i--)
+		{
+			for(j = 0;j < 4;j++)
+			{
+				if(fourPad[i * 4 + j] != 0)
+				{
+					if(fourPad[(i + 1) * 4 + j] == 0)
+					{
+						fourPad[(i + 1) * 4 + j] = fourPad[i * 4 + j];
+						fourPad[i * 4 + j] = 0;
+						++cnt;
+					}	
+					if(fourPad[(i + 1) * 4 + j] == fourPad[i * 4 + j])
+					{
+						fourPad[(i + 1) * 4 + j] *= 2;
+						fourPad[i * 4 + j] = 0;
+						++cnt;
+					}
+					if(fourPad[(i + 1) * 4 + j] != fourPad[i * 4 + j])
+					{
+						continue;
+					}	
+				}
+			}
+		}
+	}
+	//left
+	else if(dire == 'j')
+	{
+		for(i = 0;i < 4;i++)
+		{
+			for(j = 1;j < 4;j++)
+			{
+				if(fourPad[i * 4 + j] != 0)
+				{
+					if(fourPad[i * 4 + j - 1] == 0)
+					{
+						fourPad[i * 4 + j - 1] = fourPad[i * 4 + j];
+						fourPad[i * 4 + j] = 0;
+						++cnt;
+					}
+					if(fourPad[i* 4 + j - 1] == fourPad[i * 4 + j])
+					{
+						fourPad[i * 4 + j - 1] *= 2;
+						fourPad[i * 4 + j] = 0;
+						++cnt;
+					}
+					if(fourPad[i * 4 + j - 1] != fourPad[i * 4 + j])
+					{
+						continue;
+					}	
+				}
+			}
+		}
+	}
+	//right
+	else if(dire == 'l')
+	{
+		for(i = 0;i < 4;i++)
+		{
+			for(j = 2;j >= 0;j--)
+			{
+				if(fourPad[i * 4 + j] != 0)
+				{
+					if(fourPad[i * 4 + j + 1] == 0)
+					{
+						fourPad[i * 4 + j + 1] = fourPad[i * 4 + j];
+						fourPad[i * 4 + j] = 0;
+						++cnt;
+					}
+					if(fourPad[i * 4 + j + 1] == fourPad[i * 4 + j])
+					{
+						fourPad[i * 4 + j + 1] *= 2;
+						fourPad[i * 4 + j] = 0;
+						++cnt;
+					}
+					if(fourPad[i * 4 + j + 1] != fourPad[i * 4 + j])
+					{
+						continue;
+					}
+				}
+			}
+		}
+	}
+
+	return cnt;
 }
 
 void randomNum(int *fourArr)
 {
+	int *fourPad = fourArr;
+	int i, j, k, index;
+	int cnt = 0;
 
+	for(i = 0;i < 4;i++)
+	{
+		for(j = 0;j < 4;j++)
+		{
+			if(fourPad[i * 4 + j] == 0)
+				++cnt;
+		}
+	}
+
+	srand(time(NULL));
+
+	int numPos, randNum;
+
+	for(k = 0;k < 1;k++)
+	{
+		index = 0;
+		numPos = rand() % cnt + 1;
+
+		//find pos
+		for(i = 0;i < 4;i++)
+		{
+			for(j = 0;j < 4;j++)
+			{
+				if(fourPad[i * 4 + j] == 0)
+				{
+					++index;
+					if(index == numPos)
+					{
+						//put num
+						randNum = rand() % 3 + 1;
+
+						switch(randNum)
+						{
+							case 1:
+								fourPad[i * 4 + j] = 2;
+								break;
+							case 2:
+								fourPad[i * 4 + j] = 4;
+								break;
+							case 3:
+								fourPad[i * 4 + j] = 8;
+								break;
+						}
+						
+					}
+				}
+			}
+		}
+
+		
+	}
+   	
+}
+
+int checkWin(int *fourArr)
+{
+	int *fourPad = fourArr;
+	int i, j;
+	int cnt = 0;
+	for(i = 0;i < 4;i++)
+	{
+		for(j = 0;j < 4;j++)
+		{
+			if(fourPad[i * 4 + j] == 2048)
+				return 1;
+			else if(fourPad[i * 4 + j] == 0)
+				++cnt;
+		}
+	}
+
+	if(cnt == 0)
+		return -1;
+	else
+		return 0;
 }
 

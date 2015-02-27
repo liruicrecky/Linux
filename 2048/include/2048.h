@@ -12,12 +12,14 @@
 #include<stdlib.h>
 #include<string.h>
 #include<time.h>
+#include<ncurses.h>
 
 void refreshPad(int *pad);
 void refineArray(int *fourArr, int *nineArr);
 void initPad(int *pad);
-void mergeNum(int *fourArr, int dire);
+int mergeNum(int *fourArr, int dire);
 void randomNum(int *fourArr);
+int checkWin(int *fourArr);
 
 #endif
 

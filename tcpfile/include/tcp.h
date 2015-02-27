@@ -20,12 +20,16 @@
 #include<arpa/inet.h>
 #include<sys/stat.h>
 #include<sys/mman.h>
+#include<errno.h>
 
 int socketInit(char *ip, int port);
 int acceptSocket(int sock);
 int connectServer(char *ip, int port);
 unsigned long fsendBuf(int sock, char *buf, unsigned long len);
 unsigned long frecvBuf(int sock, char *buf, unsigned long len);
+
+void setNoneBlock(int sfd);
+unsigned long frecvNonBlock(int sock, char *buf);
 
 unsigned long getFileSize(char *path);
 #endif
