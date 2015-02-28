@@ -144,6 +144,7 @@ int mergeNum(int *fourArr, int dire)
 	{
 		for(i = 1;i < 4;i++)
 		{
+			flag = 0;
 			for(j = 0;j < 4;j++)
 			{
 				if(fourPad[i * 4 + j] != 0)
@@ -159,6 +160,7 @@ int mergeNum(int *fourArr, int dire)
 							if(tmpi == 0)
 								break;
 						}
+						flag = 0;
 						if(tmpi == 0)
 							continue;
 					}
@@ -182,6 +184,7 @@ int mergeNum(int *fourArr, int dire)
 	{
 		for(i = 2;i >= 0;i--)
 		{
+			flag = 0;
 			for(j = 0;j < 4;j++)
 			{
 				if(fourPad[i * 4 + j] != 0)
@@ -197,6 +200,7 @@ int mergeNum(int *fourArr, int dire)
 							if(tmpi == 3)
 								break;
 						}
+						flag = 0;
 						if(tmpi == 3)
 							continue;
 					}	
@@ -220,6 +224,7 @@ int mergeNum(int *fourArr, int dire)
 	{
 		for(j = 1;j < 4;j++)
 		{
+			flag = 0;
 			for(i = 0;i < 4;i++)
 			{
 				if(fourPad[i * 4 + j] != 0)
@@ -235,6 +240,7 @@ int mergeNum(int *fourArr, int dire)
 							if(tmpj == 0)
 								break;
 						}
+						flag = 0;
 						if(tmpj == 0)
 							continue;
 					}
@@ -258,6 +264,7 @@ int mergeNum(int *fourArr, int dire)
 	{
 		for(j = 2;j >= 0;j--)
 		{
+			flag = 0;
 			for(i = 0;i < 4;i++)
 			{
 				if(fourPad[i * 4 + j] != 0)
@@ -270,6 +277,7 @@ int mergeNum(int *fourArr, int dire)
 							fourPad[i * 4 + tmpj + 1] = fourPad[i * 4 + tmpj];
 							fourPad[i * 4 + tmpj] = 0;
 							++tmpj;
+							flag = 0;
 							if(tmpj == 3)
 								break;
 						}
