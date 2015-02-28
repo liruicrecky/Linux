@@ -16,30 +16,27 @@ int main(int argc, char *argv[])
 	int *ninePad = (int *)pad;
 	int *fourPad = (int *)savePad;
 
+	int score = 0;
+
 	//first init pad(random num)
 
 	initPad(fourPad);
 	refineArray(fourPad, ninePad);
+	printf("score: %d\n", score);
 	refreshPad(ninePad);
 
 	char buf[10];
 	char tmp;
 	int dire;
-	int cnt;
 
 	while(memset(buf, 0, 10), fgets(buf, 10, stdin) != NULL)
 	{
-		cnt = -1;
 		sscanf(buf, "%c", &tmp);
 		dire = tmp;
-		while(cnt != 0)
-		{
-			cnt = mergeNum(fourPad, dire);
-			if(cnt == 0)
-				continue;
-		}
+		score += mergeNum(fourPad, dire);
 		randomNum(fourPad);
 		refineArray(fourPad, ninePad);
+		printf("score: %d\n", score);
 		refreshPad(ninePad);
 		if(checkWin(fourPad) == 1)
 		{

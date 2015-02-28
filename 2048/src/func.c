@@ -137,6 +137,7 @@ int mergeNum(int *fourArr, int dire)
 	int i, j;
 	int tmpi, tmpj;
 	int cnt = 0;
+	int flag = 0;
 
 	//up
 	if(dire == 'i')
@@ -147,26 +148,28 @@ int mergeNum(int *fourArr, int dire)
 			{
 				if(fourPad[i * 4 + j] != 0)
 				{
+					tmpi = i;
 					if(fourPad[(i - 1) * 4 + j] == 0)
 					{
-						tmpi = i - 1;
-						while(fourPad[tmpi * 4 + j] == 0)
+						while(fourPad[(tmpi - 1) * 4 + j] == 0)
 						{
 							fourPad[(tmpi - 1) * 4 + j] = fourPad[tmpi * 4 + j];
 							fourPad[tmpi * 4 + j] = 0;
 							--tmpi;
-							if(tmpi == -1)
+							if(tmpi == 0)
 								break;
 						}
-						++cnt;
+						if(tmpi == 0)
+							continue;
 					}
-					else if(fourPad[(i - 1) * 4 + j] == fourPad[i * 4 + j])
+					if(fourPad[(tmpi - 1) * 4 + j] == fourPad[tmpi * 4 + j] && flag == 0)
 					{
-						fourPad[(i - 1) * 4 + j] *= 2;
-						fourPad[i * 4 + j] = 0;
-						++cnt;
+						fourPad[(tmpi - 1) * 4 + j] *= 2;
+						fourPad[tmpi * 4 + j] = 0;
+						cnt += fourPad[(tmpi - 1) * 4 + j];
+						flag = 1;
 					}
-					else if(fourPad[(i - 1) * 4 + j] != fourPad[i * 4 + j])
+					if(fourPad[(tmpi - 1) * 4 + j] != fourPad[tmpi * 4 + j])
 					{
 						continue;
 					}	
@@ -183,19 +186,28 @@ int mergeNum(int *fourArr, int dire)
 			{
 				if(fourPad[i * 4 + j] != 0)
 				{
+					tmpi = i;
 					if(fourPad[(i + 1) * 4 + j] == 0)
 					{
-						fourPad[(i + 1) * 4 + j] = fourPad[i * 4 + j];
-						fourPad[i * 4 + j] = 0;
-						++cnt;
+						while(fourPad[(tmpi + 1) * 4 + j] == 0)
+						{
+							fourPad[(tmpi + 1) * 4 + j] = fourPad[tmpi * 4 + j];
+							fourPad[tmpi * 4 + j] = 0;
+							++tmpi;
+							if(tmpi == 3)
+								break;
+						}
+						if(tmpi == 3)
+							continue;
 					}	
-					if(fourPad[(i + 1) * 4 + j] == fourPad[i * 4 + j])
+					if(fourPad[(tmpi + 1) * 4 + j] == fourPad[tmpi * 4 + j] && flag == 0)
 					{
-						fourPad[(i + 1) * 4 + j] *= 2;
-						fourPad[i * 4 + j] = 0;
-						++cnt;
+						fourPad[(tmpi + 1) * 4 + j] *= 2;
+						fourPad[tmpi * 4 + j] = 0;
+						cnt += fourPad[(tmpi + 1) * 4 + j];
+						flag = 1;
 					}
-					if(fourPad[(i + 1) * 4 + j] != fourPad[i * 4 + j])
+					if(fourPad[(tmpi + 1) * 4 + j] != fourPad[tmpi * 4 + j])
 					{
 						continue;
 					}	
@@ -206,25 +218,34 @@ int mergeNum(int *fourArr, int dire)
 	//left
 	else if(dire == 'j')
 	{
-		for(i = 0;i < 4;i++)
+		for(j = 1;j < 4;j++)
 		{
-			for(j = 1;j < 4;j++)
+			for(i = 0;i < 4;i++)
 			{
 				if(fourPad[i * 4 + j] != 0)
 				{
+					tmpj = j;
 					if(fourPad[i * 4 + j - 1] == 0)
 					{
-						fourPad[i * 4 + j - 1] = fourPad[i * 4 + j];
-						fourPad[i * 4 + j] = 0;
-						++cnt;
+						while(fourPad[i * 4 + tmpj - 1] == 0)
+						{
+							fourPad[i * 4 + tmpj - 1] = fourPad[i * 4 + tmpj];
+							fourPad[i * 4 + tmpj] = 0;
+							--tmpj;
+							if(tmpj == 0)
+								break;
+						}
+						if(tmpj == 0)
+							continue;
 					}
-					if(fourPad[i* 4 + j - 1] == fourPad[i * 4 + j])
+					if(fourPad[i * 4 + tmpj - 1] == fourPad[i * 4 + tmpj] && flag == 0)
 					{
-						fourPad[i * 4 + j - 1] *= 2;
-						fourPad[i * 4 + j] = 0;
-						++cnt;
+						fourPad[i * 4 + tmpj - 1] *= 2;
+						fourPad[i * 4 + tmpj] = 0;
+						cnt += fourPad[i * 4 + tmpj - 1];
+						flag = 1;
 					}
-					if(fourPad[i * 4 + j - 1] != fourPad[i * 4 + j])
+					if(fourPad[i * 4 + tmpj - 1] != fourPad[i * 4 + tmpj])
 					{
 						continue;
 					}	
@@ -235,25 +256,34 @@ int mergeNum(int *fourArr, int dire)
 	//right
 	else if(dire == 'l')
 	{
-		for(i = 0;i < 4;i++)
+		for(j = 2;j >= 0;j--)
 		{
-			for(j = 2;j >= 0;j--)
+			for(i = 0;i < 4;i++)
 			{
 				if(fourPad[i * 4 + j] != 0)
 				{
+					tmpj = j;
 					if(fourPad[i * 4 + j + 1] == 0)
 					{
-						fourPad[i * 4 + j + 1] = fourPad[i * 4 + j];
-						fourPad[i * 4 + j] = 0;
-						++cnt;
+						while(fourPad[i * 4 + tmpj + 1] == 0)
+						{
+							fourPad[i * 4 + tmpj + 1] = fourPad[i * 4 + tmpj];
+							fourPad[i * 4 + tmpj] = 0;
+							++tmpj;
+							if(tmpj == 3)
+								break;
+						}
+						if(tmpj == 3)
+							continue;
 					}
-					if(fourPad[i * 4 + j + 1] == fourPad[i * 4 + j])
+					if(fourPad[i * 4 + tmpj + 1] == fourPad[i * 4 + tmpj] && flag == 0)
 					{
-						fourPad[i * 4 + j + 1] *= 2;
-						fourPad[i * 4 + j] = 0;
-						++cnt;
+						fourPad[i * 4 + tmpj + 1] *= 2;
+						fourPad[i * 4 + tmpj] = 0;
+						cnt += fourPad[i * 4 + tmpj + 1];
+						flag = 1;
 					}
-					if(fourPad[i * 4 + j + 1] != fourPad[i * 4 + j])
+					if(fourPad[i * 4 + tmpj + 1] != fourPad[i * 4 + tmpj])
 					{
 						continue;
 					}
