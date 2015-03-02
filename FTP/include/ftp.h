@@ -21,6 +21,7 @@
 #include<arpa/inet.h>
 #include<dirent.h>
 #include<sys/mman.h>
+#include<signal.h>
 
 #define FREE 1
 #define BUSY 0
@@ -53,12 +54,15 @@ void serverCd(int clientFd, char *para);
 void serverGetFiles(int clientFd, char *para);
 void serverPutFiles(int clientFd, char *para);
 void serverRemove(int clientFd, char *para);
+void recvFork(int signum);
 
 //file
 
 unsigned long getFileSize(char *path);
 unsigned long fsendBuf(int socket, char *buf, int len);
 unsigned long frecvBuf(int socket, char *buf, int len);
+void delSpace(char *str);
+int getWordNum(char *str);
 
 #endif
 

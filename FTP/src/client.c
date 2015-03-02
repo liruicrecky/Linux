@@ -69,7 +69,9 @@ int main(int argc, char *argv[])
 				sscanf(clientMsg.buf, "%s %u %c", fileName, &fileSize, &fileType);
 				if(fileType & DT_DIR)
 					printf("  \033[34m%-10s\033[0m	%-10u\n", fileName, fileSize);
-				else 
+				else if(fileType & DT_FIFO) 
+					printf("  \033[33m%-10s\033[0m	%-10u\n", fileName, fileSize);
+				else
 					printf("  %-10s	%-10u\n", fileName, fileSize);
 			}
 		}
@@ -133,6 +135,8 @@ int main(int argc, char *argv[])
 				printf("Downloaded file from server successfully!\n");
 				printf("File path:%s\n", filePath);
 			}
+
+			close(serverFile);
 
 			fgetc(stdin);
 

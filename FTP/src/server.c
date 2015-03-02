@@ -10,6 +10,7 @@
 
 int main(int argc, char *argv[])
 {
+	signal(17, recvFork);
 	if(argc < 3)
 	{
 		printf("argv error\n");
@@ -137,23 +138,23 @@ int main(int argc, char *argv[])
 			}
 			else if(waitEpollEvents[cnt].events & EPOLLIN && waitEpollEvents[cnt].data.fd != serverSocket)
 			{
+
+					
 				memset(buf, 0, 1024);
 				read(waitEpollEvents[cnt].data.fd, buf, 1024);
-				sscanf(buf, "%u", pid);
+				sscanf(buf, "%u", &pid);
 				for(index = 0;index < atoi(argv[3]);index++)
 				{
 					if(pChi[index].childPid == pid)
 					{
-						pChi[index].stat = FREE;
+				epoll_ctl(serverEpoll, EPOLL_CTL_DEL, pChi[index].socketFd, &processEpollEvents[index]);
 						break;
 					}
 				}
-				printf("a client if offline\n");
+				
+				printf("A client is offline\n");
 			}
 		}
-	
-
-	
 	
 	}
 

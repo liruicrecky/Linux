@@ -35,3 +35,8 @@ void judgeCommand(char *comm, char *para, int sockFd)
 	}
 
 }
+
+void recvFork(int signum)
+{
+	wait(NULL);
+}

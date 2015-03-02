@@ -31,6 +31,8 @@ void makeChild(pCHILD pChi, int numChi)
 				recvFd(sockPair[0], &clientFd);		
 				handleRequest(clientFd);
 				write(sockPair[0], &childPid, sizeof(childPid));
+				close(sockPair[0]);
+				break;
 			}
 			exit(1);
 		}
@@ -46,7 +48,9 @@ void makeChild(pCHILD pChi, int numChi)
 void handleRequest(int sockFd)
 {
 	char buf[1024];
-	char comm[10], para[10];
+	char comm[10], para[30];
+	char *fileName[15];
+	int cnt, index;
 	memset(buf, 0, 1024);
 
 	strcpy(buf, "----------Welcome to the server!----------");
@@ -57,7 +61,24 @@ void handleRequest(int sockFd)
 		memset(buf, 0, 1024);
 		recv(sockFd, buf, 1024, 0);
 		memset(comm, 0, 10);
-		memset(para, 0, 10);
+		memset(para, 0, 30);
+
+		//get buf word num
+
+		delSpace(buf);
+		cnt = getWordNum(buf);
+
+		//init word to chararray
+
+//		fileName = (char *[15])calloc(cnt - 1, sizeof(15 * sizeof(char)));
+
+		for(index = 1;index < cnt;index++)
+		{
+					
+		}
+
+		printf("%d\n", cnt);
+
 		sscanf(buf, "%s %s", comm, para);
 		printf("%s %s\n", comm, para);
 		judgeCommand(comm, para, sockFd);
@@ -67,6 +88,7 @@ void handleRequest(int sockFd)
 			break;
 	}
 
+	close(sockFd);
 }
 
 void sendFd(int sockFd, int fd)

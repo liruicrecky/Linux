@@ -154,7 +154,7 @@ void serverPutFiles(int clientFd, char *para)
 	char filePath[128];
 	sprintf(filePath, "%s/%s", getcwd(NULL, 0), para);
 
-	int uplodeFile = open(filePath, O_WRONLY | O_CREAT);
+	int uploadFile = open(filePath, O_WRONLY | O_CREAT);
 
 	//recv file form client
 	
@@ -168,7 +168,7 @@ void serverPutFiles(int clientFd, char *para)
 		memset(&fileBuf, 0, sizeof(fileBuf));
 		frecvBuf(clientFd, (char *)&fileBuf, sizeof(fileBuf));
 		recvFileSize += fileBuf.msgLen;
-		write(uplodeFile, fileBuf.buf, fileBuf.msgLen);
+		write(uploadFile, fileBuf.buf, fileBuf.msgLen);
 		printf("recv : %lu\n", recvFileSize);
 	}
 
@@ -176,6 +176,8 @@ void serverPutFiles(int clientFd, char *para)
 	{
 		send(clientFd, &fileSize, sizeof(&fileSize), 0);
 	}
+
+	close(uploadFile);
 
 }
 
@@ -231,4 +233,32 @@ unsigned long frecvBuf(int socket, char *buf, int len)
 		recvSum += recv(socket, buf + recvSum, len - recvSum, 0);
 
 	return recvSum;
+}
+
+void delSpace(char *str)
+{
+	int i, j;
+	for(i = 0;str[i] != '\0';i++)
+		while((str[i] == ' ' && str[i + 1] == ' ') || str[0] == ' ')
+			for(j = i;str[j] != '\0';j++)
+				str[j] = str[j + 1];
+}
+
+int getWordNum(char *str)
+{
+	int i;
+	int num = 0, word = 0;
+
+	for(i = 0;str[i] != '\0';i++)
+	{
+		if(str[i] == ' ')
+			word = 0;
+		else if(word == 0)
+		{
+			word = 1;
+			++num;
+		}
+	}
+
+	return num;
 }
