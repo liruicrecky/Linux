@@ -49,7 +49,7 @@ void handleRequest(int sockFd)
 	char comm[10], para[10];
 	memset(buf, 0, 1024);
 
-	strcpy(buf, "welcome to the server!");
+	strcpy(buf, "----------Welcome to the server!----------");
 	send(sockFd, buf, strlen(buf), 0);
 
 	while(1)

@@ -46,10 +46,12 @@ int main(int argc, char *argv[])
 	unsigned long recvFileSize = 0;
 	unsigned long writeFileSize;
 
+	unsigned char fileType;
+
 	MSG clientMsg;
 	memset(buf, 0, sizeof(buf));
 	recv(clientSocket, buf, 1024, 0);
-	printf("from server:%s\n", buf);
+	printf("	%s\n", buf);
 
 	while(memset(buf, 0, 1024), printf("#"), fgets(buf, 1024, stdin) != NULL)
 	{
@@ -64,8 +66,11 @@ int main(int argc, char *argv[])
 				{
 					break;
 				}				
-				sscanf(clientMsg.buf, "%s %u", fileName, &fileSize);
-				printf("%-10s	%-10u\n", fileName, fileSize);	
+				sscanf(clientMsg.buf, "%s %u %c", fileName, &fileSize, &fileType);
+				if(fileType & DT_DIR)
+					printf("  \033[34m%-10s\033[0m	%-10u\n", fileName, fileSize);
+				else 
+					printf("  %-10s	%-10u\n", fileName, fileSize);
 			}
 		}
 		//if command "pwd"
@@ -92,12 +97,25 @@ int main(int argc, char *argv[])
 			//recv file size
 
 			recv(clientSocket, &fileSize, sizeof(&fileSize), 0);
-			printf("file size: %u\n", fileSize);
+			if(fileSize == -1)
+			{
+				printf("open file failed!\n");
+				continue;
+			}
+			printf("File size: %lu\n", fileSize);
 
 			//create a new file 
 
+			char userPath[128];
+			printf("Download path(use absolute path)(input 0 for current directory):");
+			scanf("%s", userPath);
+
 			sscanf(buf, "%s %s", filePath, fileName);
-			sprintf(filePath, "./%s", fileName);
+			if(userPath[0] != '0')
+				sprintf(filePath, "%s/%s", userPath, fileName);
+			else
+				sprintf(filePath, "./%s", fileName);
+
 			int serverFile = open(filePath, O_WRONLY | O_CREAT);
 
 			//recv file from server
@@ -108,9 +126,16 @@ int main(int argc, char *argv[])
 				frecvBuf(clientSocket, (char *)&clientMsg, sizeof(clientMsg));
 				recvFileSize += clientMsg.msgLen;
 				write(serverFile, clientMsg.buf, clientMsg.msgLen);
-				printf("recv : %lu\n", recvFileSize);
 			}
-			
+
+			if(fileSize == getFileSize(filePath))
+			{
+				printf("Downloaded file from server successfully!\n");
+				printf("File path:%s\n", filePath);
+			}
+
+			fgetc(stdin);
+
 		}
 		//if command "puts"
 
@@ -123,17 +148,19 @@ int main(int argc, char *argv[])
 			sscanf(buf, "%s %s", filePath, fileName);
 			sprintf(filePath, "%s/%s", getcwd(NULL, 0), fileName);
 
-			printf("%s\n", filePath);
+			printf("File padth: %s\n", filePath);
 
 			int clientFile = open(filePath, O_RDONLY);
 			if(clientFile == -1)
 			{
 				perror("open file");
+				fileSize == -1;
+				send(clientSocket, &fileSize, sizeof(&fileSize), 0);
 				continue;
 			}
 
 			fileSize = getFileSize(filePath);
-			printf("filesize:%lu\n", fileSize);
+			printf("File size:%lu\n", fileSize);
 
 			send(clientSocket, &fileSize, sizeof(&fileSize), 0);
 
@@ -166,16 +193,39 @@ int main(int argc, char *argv[])
 		
 			munmap(mmapFile, fileSize);
 
+			recv(clientSocket, &fileSize, sizeof(&fileSize), 0);
+
+			if(fileSize == getFileSize(filePath))
+			{
+				printf("uploaded file successfully!\n");
+			}
+
 		}
 		//if command "remove"
-		//
+		
 		else if(strncmp(buf, "remove", 6) == 0)
 		{
-			send(clientSocket, buf, strlen(buf), 0);
-		}
+			int flag;
+			char sure;
 
-		if(buf[0] == 'q')
+			printf("Are you sure to remove this file?(y/n)");
+			scanf("%c", &sure);
+			if(sure == 'n')
+				continue;
+			send(clientSocket, buf, strlen(buf), 0);
+			recv(clientSocket, &flag, sizeof(&flag), 0);
+			if(flag == 1)
+				printf("Removed file from server successfully!\n");
+			else
+				printf("Remove file failed!\n");
+
+			fgetc(stdin);
+
+		}
+		else if(buf[0] == 'q')
 			break;
+		else
+			printf("wrong command!\n");
 	}
 
 	close(clientSocket);

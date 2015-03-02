@@ -43,17 +43,12 @@ void serverLs(int clientFd)
 
 		//put info into buf
 
-		sprintf(serFileInfoBuf, "%s %u", dirInfo -> d_name, fileStat.st_size);
+		sprintf(serFileInfoBuf, "%s %u %c", dirInfo -> d_name, fileStat.st_size, dirInfo -> d_type);
 		//send buf
 		sendClientMsg.msgLen = strlen(serFileInfoBuf);
 		strcpy(sendClientMsg.buf, serFileInfoBuf);
 		send(clientFd, &sendClientMsg, sizeof(sendClientMsg), 0);
 
-	/*	if(dirInfo -> d_type & DT_DIR)
-			printf("\033[34m%10s\033[0m	%10u\n", dirInfo -> d_name, fileStat.st_size);
-		else
-			printf("%10s	%10u\n", dirInfo -> d_name, fileStat.st_size);
-	*/
 	}
 	//end
 	memset(&sendClientMsg, 0, sizeof(sendClientMsg));
@@ -94,18 +89,20 @@ void serverGetFiles(int clientFd, char *para)
 
 	//open file
 	
+	unsigned long serverFileSize;
+	
 	char buf[1024];
 	int serverFile = open(filePath, O_RDONLY);
 	if(serverFile == -1)
 	{
-		strcpy(buf, "can't find the file on server!'");
-		send(clientFd, buf, strlen(buf), 0);
+		serverFileSize = -1;
+		send(clientFd, &serverFileSize, sizeof(&serverFileSize), 0);
 		return;
 	}
 
 	//get file size and send to client
 	
-	unsigned long serverFileSize = getFileSize(filePath);
+	serverFileSize = getFileSize(filePath);
 
 	send(clientFd, &serverFileSize, sizeof(&serverFileSize), 0);
 
@@ -147,6 +144,11 @@ void serverPutFiles(int clientFd, char *para)
 	unsigned long fileSize;
 	recv(clientFd, &fileSize, sizeof(&fileSize), 0);
 
+	if(fileSize == -1)
+	{
+		return;
+	}
+
 	//create a new file
 	
 	char filePath[128];
@@ -170,6 +172,11 @@ void serverPutFiles(int clientFd, char *para)
 		printf("recv : %lu\n", recvFileSize);
 	}
 
+	if(getFileSize(filePath) == fileSize)
+	{
+		send(clientFd, &fileSize, sizeof(&fileSize), 0);
+	}
+
 }
 
 void serverRemove(int clientFd, char *para)
@@ -177,9 +184,16 @@ void serverRemove(int clientFd, char *para)
 	//get file path
 	
 	char filePath[128];;
+	int flag;
+
 	sprintf(filePath, "%s/%s", getcwd(NULL, 0), para);
 
-	remove(filePath);
+	if(remove(filePath) == -1)
+		flag = 0;
+	else
+		flag = 1;
+
+	send(clientFd, &flag, sizeof(&flag), 0);
 
 }
 
