@@ -22,6 +22,7 @@
 #include<dirent.h>
 #include<sys/mman.h>
 #include<signal.h>
+#include<sys/stat.h>
 
 #define FREE 1
 #define BUSY 0
@@ -54,6 +55,7 @@ void serverCd(int clientFd, char *para);
 void serverGetFiles(int clientFd, char *para);
 void serverPutFiles(int clientFd, char *para);
 void serverRemove(int clientFd, char *para);
+void clientSoenLoadFile(int clientSocket, char *buf, int flag);
 void recvFork(int signum);
 
 //file
@@ -63,6 +65,7 @@ unsigned long fsendBuf(int socket, char *buf, int len);
 unsigned long frecvBuf(int socket, char *buf, int len);
 void delSpace(char *str);
 int getWordNum(char *str);
+int isDir(char *path);
 
 #endif
 

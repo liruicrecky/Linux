@@ -48,6 +48,8 @@ int main(int argc, char *argv[])
 
 	unsigned char fileType;
 
+	int dir;
+
 	MSG clientMsg;
 	memset(buf, 0, sizeof(buf));
 	recv(clientSocket, buf, 1024, 0);
@@ -96,49 +98,7 @@ int main(int argc, char *argv[])
 		{
 			send(clientSocket, buf, strlen(buf), 0);
 
-			//recv file size
-
-			recv(clientSocket, &fileSize, sizeof(&fileSize), 0);
-			if(fileSize == -1)
-			{
-				printf("open file failed!\n");
-				continue;
-			}
-			printf("File size: %lu\n", fileSize);
-
-			//create a new file 
-
-			char userPath[128];
-			printf("Download path(use absolute path)(input 0 for current directory):");
-			scanf("%s", userPath);
-
-			sscanf(buf, "%s %s", filePath, fileName);
-			if(userPath[0] != '0')
-				sprintf(filePath, "%s/%s", userPath, fileName);
-			else
-				sprintf(filePath, "./%s", fileName);
-
-			int serverFile = open(filePath, O_WRONLY | O_CREAT);
-
-			//recv file from server
-
-			while(recvFileSize < fileSize)
-			{
-				memset(&clientMsg, 0, sizeof(clientMsg));
-				frecvBuf(clientSocket, (char *)&clientMsg, sizeof(clientMsg));
-				recvFileSize += clientMsg.msgLen;
-				write(serverFile, clientMsg.buf, clientMsg.msgLen);
-			}
-
-			if(fileSize == getFileSize(filePath))
-			{
-				printf("Downloaded file from server successfully!\n");
-				printf("File path:%s\n", filePath);
-			}
-
-			close(serverFile);
-
-			fgetc(stdin);
+			clientDownLoadFile(clientSocket, buf, 1);
 
 		}
 		//if command "puts"
