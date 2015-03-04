@@ -77,7 +77,6 @@ void handleRequest(int sockFd)
 					
 		}
 
-		printf("%d\n", cnt);
 
 		sscanf(buf, "%s %s", comm, para);
 		printf("%s %s\n", comm, para);
