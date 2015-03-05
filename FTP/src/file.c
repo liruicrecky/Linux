@@ -85,197 +85,112 @@ void serverCd(int clientFd, char *para)
 
 void serverGetFiles(int clientFd, char *para)
 {
-	MSG sendMsg;
-
-	unsigned long serverFileSize;
-
-	//get file path
+	//get path
 
 	char filePath[128];
 	memset(filePath, 0, 128);
 
 	sprintf(filePath, "%s/%s", getcwd(NULL, 0), para);
-	printf("%s\n", filePath);
+	printf("%s\n, filePath");
 
-	//isdir send filename and type
+	//opdir
 	
+	DIR *pDIR;
+	struct dirent *dirInfo;
+	struct stat fileStat;
+	char serFileInfoBuf[1024];
+
+	if((pDIR = opendir(filePath)) == NULL)
+	{
+		perror("opendir");
+		exit(1);
+	}
+
+	chdir(filePath);
+
+	//define send buf
+	
+	MSG sendMsg;
 	int dir;
-	char serbuf[30];
-	
-	memset(serbuf, 0, 30);
-	memset(&sendMsg, 0, sizeof(sendMsg));
-	dir = isDir(filePath);
+	unsigned long fileSize;
 
-	serverFileSize = getFileSize(filePath);
-
-	sprintf(serbuf, "%s %lu %d", para, serverFileSize, dir);
-
-	sendMsg.msgLen = strlen(serbuf);
-	strcpy(sendMsg.buf, serbuf);
-
-	send(clientFd, &sendMsg, sizeof(sendMsg), 0);
-	
-	if(dir == 1)
+	while(memset(serFileInfoBuf, 0, 1024), (dirInfo = readdir(pDIR)) != NULL)
 	{
+		
+		if(strcmp(dirInfo -> d_name, ".") == 0 || strcmp(dirInfo -> d_name, "..") == 0)
+			continue;
 
-		//traver dir
+		stat(dirInfo -> d_name, &fileStat);
 
-		//get dir
-	
-		DIR *pDIR;
-		struct dirent *dirInfo;
-		struct stat fileStat;
-		char serFileInfoBuf[1024];
-
-		if((pDIR = opendir(filePath)) == NULL)
+		if(dirInfo -> d_type & DT_DIR)
 		{
-			perror("opendir");
-			return;
-		}
+			dir = 1;
 
-		chdir(filePath);
+			sprintf(serFileInfoBuf, "%s %lu %d", dirInfo -> d_name, fileStat.st_size, dir);
 
-		while(memset(serFileInfoBuf, 0, 1024), (dirInfo = readdir(pDIR)) != NULL)
-		{
-			if(strcmp(dirInfo -> d_name, ".") == 0 || strcmp(dirInfo -> d_name, "..") == 0)
-			{
-				continue;
-			}
+			//send buf
 
-			//get file stat
-
-			stat(dirInfo -> d_name, &fileStat);
-
-			//put info into buf
-			
-			if(dirInfo -> d_type & DT_DIR)
-			{
-				dir = 1;
-
-				sprintf(serFileInfoBuf, "%s %lu %d", dirInfo -> d_name, fileStat.st_size, dir);
-
-				//send buf
+			memset(&sendMsg, 0, sizeof(sendMsg));
 				
-				sendMsg.msgLen = strlen(serFileInfoBuf);
-				strcpy(sendMsg.buf, serFileInfoBuf);
-				send(clientFd, &sendMsg, sizeof(sendMsg), 0);
+			sendMsg.msgLen = strlen(serFileInfoBuf);
+			strcpy(sendMsg.buf, serFileInfoBuf);
+			send(clientFd, &sendMsg, sizeof(sendMsg), 0);
+			
+			serverGetFiles(clientFd, dirInfo -> d_name);
 
-				serverGetFiles(clientFd, dirInfo -> d_name);
-			}
-			else
-			{
-				char buf[1024];
-
-				dir = 0;
-				serverFileSize = fileStat.st_size;
-				//send
-
-				memset(buf, 0, 1024);
-				memset(&sendMsg, 0, sizeof(sendMsg));
-
-				sprintf(buf, "%s %lu %d", dirInfo -> d_name, fileStat.st_size, dir);
-				sendMsg.msgLen = strlen(buf);
-				strcpy(sendMsg.buf, buf);
-
-				send(clientFd, &sendMsg, sizeof(sendMsg), 0);
-
-				//open file	
-
-				memset(filePath, 0, 128);
-
-				sprintf(filePath, "%s/%s", getcwd(NULL, 0), dirInfo -> d_name);
-
-				int serverFile = open(filePath, O_RDONLY);
-
-				if(serverFile == -1)
-				{
-					serverFileSize = -1;
-					send(clientFd, &serverFileSize, sizeof(&serverFileSize), 0);
-				}
-
-				//mmap
-	
-				char *mmapFile;
-
-				mmapFile = mmap(NULL, serverFileSize, PROT_READ, MAP_PRIVATE, serverFile, 0);
-
-				close(serverFile);
-
-				//send package
-
-				MSG sendBuf;
-				unsigned long readFileSize;
-				unsigned long totalSendFileSize = 0;
-
-				while(memset(&sendBuf, 0, sizeof(sendBuf)), totalSendFileSize < serverFileSize)
-				{
-					readFileSize = 0;
-					while(readFileSize < 1024 && totalSendFileSize < serverFileSize)
-					{
-						*(sendBuf.buf + readFileSize) = *(mmapFile + totalSendFileSize);
-						++totalSendFileSize;
-						++readFileSize;
-					}			
-					sendBuf.msgLen = readFileSize;
-					fsendBuf(clientFd, (char *)&sendBuf, sizeof(sendBuf));
-				}
-
-				munmap(mmapFile, serverFileSize);
-
-				chdir("..");
-
-			}
+			chdir("..");
 		}
-
-	}
-	else
-	{
-	
-		//open file	
-	
-		char buf[1024];
-		int serverFile = open(filePath, O_RDONLY);
-
-		if(serverFile == -1)
+		else
 		{
-			serverFileSize = -1;
-			send(clientFd, &serverFileSize, sizeof(&serverFileSize), 0);
-		}
-
-		//mmap
 	
-		char *mmapFile;
+			//open file	
+	
+			char buf[1024];
+			int serverFile = open(filePath, O_RDONLY);
 
-		mmapFile = mmap(NULL, serverFileSize, PROT_READ, MAP_PRIVATE, serverFile, 0);
+			unsigned long serverFileSize = fileStat.st_size;
 
-		close(serverFile);
-
-		//send package
-
-		MSG sendBuf;
-		unsigned long readFileSize;
-		unsigned long totalSendFileSize = 0;
-
-		while(memset(&sendBuf, 0, sizeof(sendBuf)), totalSendFileSize < serverFileSize)
-		{	
-			readFileSize = 0;
-			while(readFileSize < 1024 && totalSendFileSize < serverFileSize)
+			if(serverFile == -1)
 			{
-				*(sendBuf.buf + readFileSize) = *(mmapFile + totalSendFileSize);
-				++totalSendFileSize;
-				++readFileSize;
+				serverFileSize = -1;
+				send(clientFd, &serverFileSize, sizeof(&serverFileSize), 0);
 			}
-			sendBuf.msgLen = readFileSize;
-			fsendBuf(clientFd, (char *)&sendBuf, sizeof(sendBuf));
-		}
 
-		munmap(mmapFile, serverFileSize);
+			//mmap
+	
+			char *mmapFile;
+
+			mmapFile = mmap(NULL, serverFileSize, PROT_READ, MAP_PRIVATE, serverFile, 0);
+
+			close(serverFile);
+
+			//send package
+
+			MSG sendBuf;
+			unsigned long readFileSize;
+			unsigned long totalSendFileSize = 0;
+
+			while(memset(&sendBuf, 0, sizeof(sendBuf)), totalSendFileSize < serverFileSize)
+			{	
+				readFileSize = 0;
+				while(readFileSize < 1024 && totalSendFileSize < serverFileSize)
+				{
+					*(sendBuf.buf + readFileSize) = *(mmapFile + totalSendFileSize);
+					++totalSendFileSize;
+					++readFileSize;
+			}
+				sendBuf.msgLen = readFileSize;
+				fsendBuf(clientFd, (char *)&sendBuf, sizeof(sendBuf));
+			}
+
+			munmap(mmapFile, serverFileSize);
+			
+
+		}
 
 	}
-
-	
-	
 }
+
 
 void serverPutFiles(int clientFd, char *para)
 {
@@ -512,7 +427,9 @@ void clientDownLoadFile(int clientSocket, char *buf, int flag)
 
 			fgetc(stdin);
 
+			printf("before chidr--path:%s\n", getcwd(NULL, 0));
 			chdir("..");
+			printf("before chidr--path:%s\n", getcwd(NULL, 0));
 		}
 
 }
