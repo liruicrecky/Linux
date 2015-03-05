@@ -7,13 +7,14 @@
 
 #include<iostream>
 #include<string>
+#include<cctype>
 
 int main(int argc, char *argv[])
 {
 	std::string str;
 
 	std::cout<<"Input a string:";
-	std::cin>>str;
+	getline(std::cin, str);
 
 	std::cout<<std::endl<<"ori:";
 
@@ -24,10 +25,11 @@ int main(int argc, char *argv[])
 
 	for(std::string::iterator ix = str.begin();ix < str.end();ix++)
 	{
-		if(*ix >= 'a' && *ix <= 'z')
-			*ix -= 32;
-		else if(*ix >= 'A' && *ix <= 'Z')
-			*ix += 32;
+		if(islower(*ix))
+			*ix = toupper(*ix);
+		else if(isupper(*ix))
+			*ix = tolower(*ix);
+
 		std::cout<<*ix;
 	}
 

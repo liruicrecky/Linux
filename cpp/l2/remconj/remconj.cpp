@@ -8,6 +8,7 @@
 #include<iostream>
 #include<string>
 #include<sstream>
+#include<cctype>
 
 int main(int argc, char **argv)
 {
@@ -20,11 +21,12 @@ int main(int argc, char **argv)
 
 	for(std::string::iterator ix = str.begin();ix < str.end();ix++)
 	{
-		if(*ix == '.' || *ix == ',' || *ix == ':' || *ix == ';' || *ix == '?' || *ix == '!')
+		if(ispunct(*ix))
 			*ix = ' ';
 	}
 
 	std::cout<<std::endl;
+
 
 	std::istringstream istr(str);
 
