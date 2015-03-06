@@ -122,6 +122,9 @@ void serverGetFiles(int clientFd, char *para)
 
 		stat(dirInfo -> d_name, &fileStat);
 
+		memset(filePath, 0, 128);
+		sprintf(filePath, "%s/%s", getcwd(NULL, 0), dirInfo -> d_name);
+
 		if(dirInfo -> d_type & DT_DIR)
 		{
 			dir = 1;
@@ -145,7 +148,6 @@ void serverGetFiles(int clientFd, char *para)
 	
 			//open file	
 	
-			char buf[1024];
 			int serverFile = open(filePath, O_RDONLY);
 
 			unsigned long serverFileSize = fileStat.st_size;
@@ -166,21 +168,20 @@ void serverGetFiles(int clientFd, char *para)
 
 			//send package
 
-			MSG sendBuf;
 			unsigned long readFileSize;
 			unsigned long totalSendFileSize = 0;
 
-			while(memset(&sendBuf, 0, sizeof(sendBuf)), totalSendFileSize < serverFileSize)
+			while(memset(&sendMsg, 0, sizeof(sendMsg)), totalSendFileSize < serverFileSize)
 			{	
 				readFileSize = 0;
 				while(readFileSize < 1024 && totalSendFileSize < serverFileSize)
 				{
-					*(sendBuf.buf + readFileSize) = *(mmapFile + totalSendFileSize);
+					*(sendMsg.buf + readFileSize) = *(mmapFile + totalSendFileSize);
 					++totalSendFileSize;
 					++readFileSize;
 			}
-				sendBuf.msgLen = readFileSize;
-				fsendBuf(clientFd, (char *)&sendBuf, sizeof(sendBuf));
+				sendMsg.msgLen = readFileSize;
+				fsendBuf(clientFd, (char *)&sendMsg, sizeof(sendMsg));
 			}
 
 			munmap(mmapFile, serverFileSize);
@@ -336,71 +337,67 @@ int isDir(char *path)
 }
 		
 
-void clientDownLoadFile(int clientSocket, char *buf, int flag)
+void clientDownloadFiles(int clientSocket, char *buf, int flag)
 {
+	char fileName[20];
+	char filePath[128];
+	char userPath[128];
 
-		char fileName[20];
-		char filePath[128];
+	unsigned long fileSize;
 
-		unsigned long fileSize;
-		unsigned long recvFileSize = 0;
-		unsigned long writeFileSize;
+	MSG recvMsg;
 
-		MSG clientMsg;
-		//get save file path
+	//if user path
 
-		//first recv
-		char userPath[128];
-
-		if(flag == 1)
+	if(flag == 1)
+	{
+		sscanf(buf, "%s/%s", filePath, fileName);
+		memset(userPath, 0, 128);
+		printf("Download path(use absolute path)(input 0 for current directory):");
+		scanf("%s", userPath);
+		if(userPath[0] != '0')
 		{
-			sscanf(buf, "%s %s", filePath, fileName);
-			printf("Download path(use absolute path)(input 0 for current directory):");
-			scanf("%s", userPath);
-			if(userPath[0] != '0')
-			{
-				sprintf(filePath, "%s/%s", userPath, fileName);
-				chdir(userPath);
-			}
-			else
-			{
-				sprintf(filePath, "%s/%s", getcwd(NULL, 0), fileName);
-				printf("%s\n", filePath);
-			}
+			sprintf(filePath, "%s/%s", userPath, fileName);
+			chdir(userPath);
 		}
+		else
+		{
+			sprintf(filePath, "%s/%s", getcwd(NULL, 0), fileName);
+			printf("%s\n", filePath);
+		}
+	}
 
-		//recv file size and isDir
-		
-		memset(&clientMsg, 0, sizeof(clientMsg));
-		recv(clientSocket, &clientMsg, sizeof(clientMsg), 0);
+	int dir;
 
+	while(memset(&recvMsg, 0, sizeof(recvMsg)), recv(clientSocket, &recvMsg, sizeof(recvMsg), 0))
+	{
 		int dir;
 
-		sscanf(clientMsg.buf, "%s %lu %d", fileName, &fileSize, &dir);
+		sscanf(recvMsg.buf, "%s %lu %d", fileName, &fileSize, &dir);
 
 		if(flag != 1)
 		{
 			memset(filePath, 0, 128);
 			sprintf(filePath, "%s/%s", getcwd(NULL, 0), fileName);
 		}
-
+		
 		printf("%s\n", fileName);
 
 		printf("%s\n", filePath);
 
-		if(fileSize == -1)
-		{
-			printf("open file failed!\n");
-			return;
-		}
 		if(dir == 1)
 		{
 			mkdir(filePath, 0777);
 			chdir(filePath);
-			clientDownLoadFile(clientSocket, filePath, 0);
+			clientDownloadFiles(clientSocket, filePath, 0);
+			chdir("..");
 		}
 		else
 		{
+
+			unsigned long recvFileSize = 0;
+			unsigned long writeFileSize;
+			
 			printf("File size: %lu\n", fileSize);
 
 			//create a new file 
@@ -411,10 +408,10 @@ void clientDownLoadFile(int clientSocket, char *buf, int flag)
 
 			while(recvFileSize < fileSize)
 			{
-				memset(&clientMsg, 0, sizeof(clientMsg));
-				frecvBuf(clientSocket, (char *)&clientMsg, sizeof(clientMsg));
-				recvFileSize += clientMsg.msgLen;
-				write(serverFile, clientMsg.buf, clientMsg.msgLen);
+				memset(&recvMsg, 0, sizeof(recvMsg));
+				frecvBuf(clientSocket, (char *)&recvMsg, sizeof(recvMsg));
+				recvFileSize += recvMsg.msgLen;
+				write(serverFile, recvMsg.buf, recvMsg.msgLen);
 			}
 	
 			if(fileSize == getFileSize(filePath))
@@ -428,9 +425,9 @@ void clientDownLoadFile(int clientSocket, char *buf, int flag)
 			fgetc(stdin);
 
 			printf("before chidr--path:%s\n", getcwd(NULL, 0));
-			chdir("..");
-			printf("before chidr--path:%s\n", getcwd(NULL, 0));
 		}
+		
+	}
 
 }
 

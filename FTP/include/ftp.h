@@ -55,7 +55,7 @@ void serverCd(int clientFd, char *para);
 void serverGetFiles(int clientFd, char *para);
 void serverPutFiles(int clientFd, char *para);
 void serverRemove(int clientFd, char *para);
-void clientSoenLoadFile(int clientSocket, char *buf, int flag);
+void clientSoenloadFiles(int clientSocket, char *buf, int flag);
 void recvFork(int signum);
 
 //file

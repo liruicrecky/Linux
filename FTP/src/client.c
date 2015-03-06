@@ -98,7 +98,7 @@ int main(int argc, char *argv[])
 		{
 			send(clientSocket, buf, strlen(buf), 0);
 
-			clientDownLoadFile(clientSocket, buf, 1);
+			clientDownloadFiles(clientSocket, buf, 1);
 
 		}
 		//if command "puts"
