@@ -5,7 +5,7 @@
 	> Created Time: Fri 06 Mar 2015 07:43:30 PM CST
  ************************************************************************/
 
-#include"count.h"
+#include"wor.h"
 
 using std::cout;
 using std::cin;
@@ -13,44 +13,6 @@ using std::endl;
 using std::string;
 using std::vector;
 
-bool cmp(WOR a, WOR b)
-{
-	return a.cnt > b.cnt;
-}
-
-void initFile(string &oname, string &name)
-{
-	string line;
-	string str;
-	int cnt;
-
-	std::ofstream ofs(name.c_str());
-	std::ifstream ifs(oname.c_str());
-
-	if(!ifs.good())
-	{
-		cout << "open file failed" << endl;
-		return;
-	}
-	
-	while(getline(ifs, line))
-	{
-		std::istringstream istr(line);
-		
-		for(cnt = 0;cnt != line.size();++cnt)
-		{
-			if(ispunct(line[cnt]))
-				line[cnt] = ' ';
-			if(isupper(line[cnt]))
-				line[cnt] = tolower(line[cnt]);
-		}
-
-		ofs << line << std::endl;
-	}
-
-	ofs.close();
-	ifs.close();
-}
 
 int main(void)
 {
@@ -65,10 +27,11 @@ int main(void)
 	initFile(oname, name);
 
 	//open new file and ignore file
+
 	std::ifstream ifs(name.c_str());
 	std::ifstream iifs("/home/liruicheng/LinuxCode/cpp/L3/countword/data/ignore.txt");
 
-	if(!iifs.good())
+	if(!iifs)
 	{	
 		cout << "open ignore file failed" << endl
 			 << "read all words of the txt" << endl;
@@ -123,8 +86,8 @@ int main(void)
 
 			if(word.size() == 0)
 			{
-					wor.word = str;
-					wor.cnt = 1;
+					wor.setWord(str);
+					wor.setCnt(1);
 					word.push_back(wor);
 					continue;
 			}
@@ -133,20 +96,19 @@ int main(void)
 
 			for(vector<WOR>::iterator iter = word.begin();iter != word.end();++iter)
 			{
-				if((*iter).word == str)
+				if((*iter).cmpWord(str))
 				{
-					++(*iter).cnt;
+					(*iter).addCnt();
 					break;
 				}
 
 				++size;
-
 			}
 
 			if(size == word.size())
 			{
-				wor.word = str;
-				wor.cnt = 1;
+				wor.setWord(str);
+				wor.setCnt(1);
 				word.push_back(wor);
 			}
 
@@ -162,12 +124,14 @@ int main(void)
 	
 	sort(word.begin(), word.end(), cmp);
 
+	//print res
+
 	int i = 1;
 	
 	cout << endl << "-----TOP TEN-----" << endl;
 
 	for(vector<WOR>::iterator iter = word.begin();iter != word.begin() + 10;++iter)
-		cout << i++ << "st word is " << "'" << (*iter).word << "'" << " :" << (*iter).cnt << endl; 
+		cout << i++ << "st word is " << "'" << (*iter).getWord() << "'" << " :" << (*iter).getCnt() << endl; 
 
 	ifs.close();
 
