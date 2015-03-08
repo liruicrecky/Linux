@@ -120,9 +120,9 @@ int main(void)
 
 			for(vector<WOR>::iterator iter = word.begin();iter != word.end();++iter)
 			{
-				if((*iter).cmpWord(str))
+				if(iter -> cmpWord(str))
 				{
-					(*iter).addCnt();
+					iter -> addCnt();
 					break;
 				}
 
