@@ -19,16 +19,28 @@ int main(void)
 	//file path
 	string oname = "/home/liruicheng/LinuxCode/cpp/L3/countword/data/The_Holy_Bible.txt";
 
-	//init new file
+	//if init new file
+	int ifnew = 0;
 	string name;
-	cout << "Input a name for the inited file(*.txt):";
+	std::ifstream ifs;
+
+	cout << "create a new inited file?(y/n)";
 	cin >> name;
+	
+	if(name[0] == 'y')
+	{
+		cout << "Input a name for the inited file(*.txt):";
+		cin >> name;
+	
+		ifnew = 1;
+		initFile(oname, name);
+		ifs.open(name.c_str());
+	}
+	else
+		ifs.open(oname.c_str());
 
-	initFile(oname, name);
+	//open ignore file
 
-	//open new file and ignore file
-
-	std::ifstream ifs(name.c_str());
 	std::ifstream iifs("/home/liruicheng/LinuxCode/cpp/L3/countword/data/ignore.txt");
 
 	if(!iifs)
@@ -47,6 +59,7 @@ int main(void)
 
 	size_t cntLine = 0;
 	size_t cntWord = 0;
+	size_t cnt;
 
 	int flag;
 
@@ -63,8 +76,19 @@ int main(void)
 	
 	while(getline(ifs, line))
 	{	
-		std::istringstream istr(line);
+		//not creatr inited file deal the data form old file
+		if(!ifnew)
+		{
+			for(cnt = 0;cnt != line.size();++cnt)
+			{
+				if(ispunct(line[cnt]))
+					line[cnt] = ' ';
+				if(isupper(line[cnt]))
+					line[cnt] = tolower(line[cnt]);
+			}
+		}
 
+		std::istringstream istr(line);
 		++cntLine;
 
 		while(istr >> str)
