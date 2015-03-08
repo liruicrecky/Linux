@@ -18,6 +18,8 @@
 class WOR
 {
 public:
+	WOR();
+	~WOR();
 	void setWord(std::string &str);
 	void setCnt(int x);
 	void addCnt();

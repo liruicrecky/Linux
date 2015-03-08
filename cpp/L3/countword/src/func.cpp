@@ -7,11 +7,15 @@
 
 #include"wor.h"
 
+//class
+
+WOR::WOR() : word(""), cnt(0) {}
+
+WOR::~WOR() {}
+
 bool WOR::cmpWord(std::string &str)
 {
-	if(word == str)
-		return 1;
-	return 0;
+	return word == str;
 }
 
 void WOR::setWord(std::string &str)
@@ -38,6 +42,8 @@ std::string WOR::getWord()
 {
 	return word;
 }
+
+//func
 
 bool cmp(WOR a, WOR b)
 {
