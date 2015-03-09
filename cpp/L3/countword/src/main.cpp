@@ -16,6 +16,11 @@ using std::vector;
 
 int main(void)
 {
+	//time cal
+	
+	time_t handFileBeg, handFileEnd;
+	time_t handWorBeg, handWorEnd;
+
 	//file path
 	string oname = "/home/liruicheng/LinuxCode/cpp/L3/countword/data/The_Holy_Bible.txt";
 
@@ -33,13 +38,17 @@ int main(void)
 		cin >> name;
 	
 		ifnew = 1;
+		handFileBeg = clock();
 		initFile(oname, name);
+		handFileEnd = clock();
 		ifs.open(name.c_str());
 	}
 	else
 		ifs.open(oname.c_str());
 
 	//open ignore file
+	
+	handWorBeg = clock();
 
 	std::ifstream iifs("/home/liruicheng/LinuxCode/cpp/L3/countword/data/ignore.txt");
 
@@ -110,10 +119,10 @@ int main(void)
 
 			if(word.size() == 0)
 			{
-					wor.setWord(str);
-					wor.setCnt(1);
-					word.push_back(wor);
-					continue;
+				wor.setWord(str);
+				wor.setCnt(1);
+				word.push_back(wor);
+				continue;
 			}
 
 			size = 0;
@@ -139,6 +148,8 @@ int main(void)
 		}
 	}
 
+	handWorEnd = clock();
+
 
 	cout << endl << "-----WORDS AND LINES-----" << endl
 	     << "The words of the txt is: " << cntWord << endl
@@ -146,16 +157,26 @@ int main(void)
 
 	//sort
 	
+	time_t sortBeg, sortEnd;
+	
+	sortBeg = clock();
 	sort(word.begin(), word.end(), cmp);
+	sortEnd = clock();
 
-	//print res
+	//print res>
 
 	int i = 1;
 	
 	cout << endl << "-----TOP TEN-----" << endl;
 
 	for(vector<WOR>::iterator iter = word.begin();iter != word.begin() + 10;++iter)
-		cout << i++ << "st word is " << "'" << (*iter).getWord() << "'" << " :" << (*iter).getCnt() << endl; 
+		cout << i++ << "st word is " << "'" << iter -> getWord() << "'" << " :" << iter -> getCnt() << endl; 
+
+	cout << "-----Time-----" << endl
+		 << "handle file time: " << (static_cast<double>(handFileEnd - handFileBeg) / CLOCKS_PER_SEC) << "s" << endl
+		 << "handle word time: " << (static_cast<double>(handWorEnd - handWorBeg) / CLOCKS_PER_SEC) << "s" << endl
+		 << "       sort time: " << (static_cast<double>(sortEnd - sortBeg) / CLOCKS_PER_SEC) << "s" << endl;
+		
 
 	ifs.close();
 

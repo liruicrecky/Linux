@@ -14,6 +14,7 @@
 #include<fstream>
 #include<sstream>
 #include<algorithm>
+#include<ctime>
 
 class WOR
 {

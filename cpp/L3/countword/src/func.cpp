@@ -13,7 +13,7 @@ WOR::WOR() : word(""), cnt(0) {}
 
 WOR::~WOR() {}
 
-bool WOR::cmpWord(std::string &str)
+bool WOR::cmpWord(std::string &str) 
 {
 	return word == str;
 }
@@ -33,12 +33,12 @@ void WOR::addCnt()
 	++cnt;
 }
 
-int WOR::getCnt()
+int WOR::getCnt() 
 {
 	return cnt;
 }
 
-std::string WOR::getWord()
+std::string WOR::getWord() 
 {
 	return word;
 }
@@ -68,7 +68,7 @@ void initFile(std::string &oriname, std::string &desname)
 	}
 
 	while(getline(ifs, line))
-	{
+	{	
 		for(cnt = 0;cnt != line.size();++cnt)
 		{
 			if(ispunct(line[cnt]))
