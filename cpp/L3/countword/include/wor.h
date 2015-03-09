@@ -24,9 +24,9 @@ public:
 	void setWord(std::string &str);
 	void setCnt(int x);
 	void addCnt();
-	bool cmpWord(std::string &str);
-	int getCnt();
-	std::string getWord();
+	bool cmpWord(std::string &str) const;
+	int getCnt() const;
+	std::string getWord() const;
 
 private:
 	std::string word;

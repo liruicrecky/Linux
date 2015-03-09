@@ -13,7 +13,7 @@ WOR::WOR() : word(""), cnt(0) {}
 
 WOR::~WOR() {}
 
-bool WOR::cmpWord(std::string &str) 
+bool WOR::cmpWord(std::string &str) const 
 {
 	return word == str;
 }
@@ -33,12 +33,12 @@ void WOR::addCnt()
 	++cnt;
 }
 
-int WOR::getCnt() 
+int WOR::getCnt() const
 {
 	return cnt;
 }
 
-std::string WOR::getWord() 
+std::string WOR::getWord() const
 {
 	return word;
 }
