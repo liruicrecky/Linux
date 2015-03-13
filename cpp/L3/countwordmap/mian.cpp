@@ -119,8 +119,8 @@ int main(void)
 	//print
 	
 	cout << endl << "----------Word and Line----------" << endl
-	     << "Totle Word: " << wordCnt << endl
-	     << "Totle Line: " << lineCnt << endl;
+	     << "Totle Words: " << wordCnt << endl
+	     << "Totle Lines: " << lineCnt << endl;
 
 	cout << endl << "----------Top Ten----------" << endl;
 
@@ -133,8 +133,6 @@ int main(void)
 		 << "Handle word time: " << (static_cast<double>(wend - wstart) / CLOCKS_PER_SEC) << "s" << endl
 		 << "Sort time       : " << (static_cast<double>(send - sstart) / CLOCKS_PER_SEC) << "s" << endl;
 
-
-	
 	return 0;
 }
 
