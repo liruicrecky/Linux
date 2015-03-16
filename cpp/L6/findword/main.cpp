@@ -1,30 +1,46 @@
 /*************************************************************************
-	> File Name: main.cpp
-	> Author: Reacky
-	> Mail:327763224@qq.com 
-	> Created Time: Fri 13 Mar 2015 08:27:59 PM CST
+  > File Name: main.cpp
+  > Author: Reacky
+  > Mail:327763224@qq.com 
+  > Created Time: Fri 13 Mar 2015 08:27:59 PM CST
  ************************************************************************/
 
 #include"word.h"
+#include<stdlib.h>
 
-int main(int argc, char **argv)
+int main(void)
 {
-	if(argc < 2)
-	{
-		std::cout << "input path first!" << std::endl;
-		return 1;
+	std::string path;
+
+	fileHandle file;
+
+	while(std::cout << "Input a path(*.*): ", std::cin >> path){
+		try{
+			file.openFile(path);
+			break;
+		}catch(std::runtime_error err){
+			std::cout << err.what() << std::endl
+				<< "Input again?(y/n)" << std::endl;
+			char c;
+			std::cin >> c;
+			if(std::cin && c == 'n')
+				exit(1);
+		}
 	}
-	std::ifstream ifs(argv[1]);
-	if(!ifs)
-	{
-		std::cout << "open file failed!" << std::endl;
-		return 1;
-	}
+
+	/*
+	   if(!ifs)
+	   {
+	   std::cout << "open file failed!" << std::endl;
+	   return 1;
+	   }
+	   */
 
 
 	WORD word;
 
-	word.openFile(ifs);
+	word.openFile(file.getIfs());
+
 	std::string inputword;
 
 	while(std::cout << "Input a word you want to search: ", std::cin >> inputword, !std::cin.eof())
@@ -32,6 +48,8 @@ int main(int argc, char **argv)
 		WORD::setype res = word.findWord(inputword);
 		print(res, inputword, word);
 	}
+
+	std::cout << std::endl;
 
 	return 0;
 }

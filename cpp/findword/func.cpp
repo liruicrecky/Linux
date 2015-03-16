@@ -1,8 +1,8 @@
 /*************************************************************************
-  > File Name: ./func.cpp
-  > Author: Reacky
-  > Mail:327763224@qq.com 
-  > Created Time: Fri 13 Mar 2015 08:28:30 PM CST
+	> File Name: ./func.cpp
+	> Author: Reacky
+	> Mail:327763224@qq.com 
+	> Created Time: Fri 13 Mar 2015 08:28:30 PM CST
  ************************************************************************/
 
 #include"word.h"
@@ -13,19 +13,17 @@
 void WORD::saveFileLine(std::ifstream &ifs)
 {
 	std::string line;
-
 	while(getline(ifs, line))
 	{
 		/*
-			for(std::string::iterator iter = line.begin();iter != line.end();++iter)
-			{
-				if(ispunct(*iter))
-					*iter = ' ';
-				if(isupper(*iter))
-					*iter = tolower(*iter);
-			}
+		for(std::string::iterator iter = line.begin();iter != line.end();++iter)
+		{
+			if(ispunct(*iter))
+				*iter = ' ';
+			if(isupper(*iter))
+				*iter = tolower(*iter);
+		}
 		*/
-
 		fileLine.push_back(line);
 	}
 }
@@ -73,7 +71,7 @@ void print(const WORD::setype &res, const std::string &inputword, const WORD wor
 	WORD::setype::size_type size = res.size();
 	std::cout << std::endl << inputword << " occurs " << size << " times" << std::endl;
 	WORD::setype::const_iterator iter = res.begin();
-
+	
 	while(iter != res.end())
 	{
 		std::cout << "(line " << (*iter) + 1 <<") " << word.getLineText(*iter) << std::endl;
