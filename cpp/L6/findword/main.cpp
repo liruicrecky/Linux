@@ -14,7 +14,8 @@ int main(void)
 
 	fileHandle file;
 
-	while(std::cout << "Input a path(*.*): ", std::cin >> path){
+	while(std::cout << "Input a path(*.*): ", std::cin >> path)
+	{
 		try{
 			file.openFile(path);
 			break;
