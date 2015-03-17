@@ -16,28 +16,41 @@
 #include<fstream>
 #include<stdexcept>
 
+//文件raii
 class fileHandle
 {
 	public:
-		fileHandle() {}
+		//构造函数
+		fileHandle() { };
+		fileHandle(const std::string &s)
+		{
+			ifs.open(s.c_str());
+		}
+		//析构函数，释放使用资源
 		~fileHandle()
 		{
 			ifs.close();
 		}
+		//打开文件，也可以直接用构造函数
 		void openFile(const std::string &s)
 		{
+			//打开文件
 			ifs.open(s.c_str());
+			//如果打开失败，抛出错误，否则打开成功
 			if(!ifs)
 				throw std::runtime_error("Open file error!");
 			else
 				std::cout << "Open file successed!" << std::endl;
 		}
+		//获取私有变量ifs
 		std::ifstream &getIfs()
 		{
 			return ifs;
 		}
 	private:
+		//文件操作符
 		std::ifstream ifs;
+		//复制构造函数和赋值函数对文件类型禁止使用
 		fileHandle(const fileHandle &);
 		fileHandle &operator=(const fileHandle &);
 };

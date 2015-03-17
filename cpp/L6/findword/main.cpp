@@ -16,6 +16,7 @@ int main(void)
 
 	while(std::cout << "Input a path(*.*): ", std::cin >> path)
 	{
+		//try为试着尝试做什么，如果出错，由catch接收
 		try{
 			file.openFile(path);
 			break;
