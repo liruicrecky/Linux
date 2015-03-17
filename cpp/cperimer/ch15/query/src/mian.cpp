@@ -6,13 +6,27 @@
  ************************************************************************/
 
 #include"query.h"
-#include"word.h"
 #include<stdlib.h>
+
+void print(const std::set<TextQuery::line_no> &res, const TextQuery &file)
+{
+	typedef std::set<TextQuery::line_no> line_nums;
+	
+	line_nums::size_type size = res.size();
+
+	std::cout << "match occurs " << size << " times" << std::endl;
+
+	line_nums::const_iterator iter = res.begin();
+
+	for(;iter != res.end();++iter)
+		std::cout << "(line " << (*iter) + 1 << file.getTextLine(*iter) << std::endl;
+
+}
 
 int main(void)
 {
 	std::string fileName;
-	fileHandel file;
+	fileHandle file;
 
 	//open file
 	
@@ -27,17 +41,28 @@ int main(void)
 				      << "Input again(y/n): ";
 			char c;
 			std::cin >> c;
-			if(cin && c == 'n')
+			if(std::cin && c == 'n')
 				exit(1);
 		}
 	}
 
 	//init wordMap
 	
-	Word word;
+	TextQuery word;
 
-	word.initWordMap(file.getIfs());
+	word.initFile(file.getIfs());
 
+
+	Query q;
+
+	typedef std::set<TextQuery::line_no> line_numbers;
+
+	while(std::cout << "Executed Query for: ", std::cin >> q, !std::cin.eof())
+	{
+		const line_numbers &res = q.eval(word);
+		print(res, word);
+
+	}
 
 	return 0;
 }

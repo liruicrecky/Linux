@@ -1,12 +1,12 @@
 /*************************************************************************
-	> File Name: ./include/word.h
+	> File Name: ./include/textquery.h
 	> Author: Reacky
 	> Mail:327763224@qq.com 
 	> Created Time: Mon 16 Mar 2015 03:25:49 PM CST
  ************************************************************************/
 
-#ifndef __WORD_H__
-#define __WORD_H__
+#ifndef __TEXTQUERY_H__
+#define __TEXTQUERY_H__
 
 #include<iostream>
 #include<string>
@@ -46,18 +46,19 @@ private:
 
 };
 
-class Word
+class TextQuery
 {
 public:
-	typedef std::set<std::vector<std::string>::size_type> lineNo;
+	typedef std::vector<std::string>::size_type line_no;
 
 	void initFile(std::ifstream &);
+	std::set<line_no> exQuery(const std::string &) const;
+	std::string getTextLine(line_no) const;
+	line_no size() const;
 private:
-	std::map<std::string, lineNo> wordMap;
+	std::map<std::string, std::set<line_no> > wordMap;
 	std::vector<std::string> fileLine;
 	void initWordMap(std::ifstream &);
 };
-
-
 
 #endif

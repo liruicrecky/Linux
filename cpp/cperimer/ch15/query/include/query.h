@@ -8,9 +8,9 @@
 #ifndef __QUERY_H__
 #define __QUERY_H__
 
-#include<iostream>
-#include<string>
-#include<stream>
+#include<algorithm>
+#include"textquery.h"
+
 
 class Query_base
 {
@@ -22,7 +22,7 @@ private:
 	virtual std::set<line_no> 
 		eval(const TextQuery &) const = 0;
 	virtual std::ostream &
-		display(std::ostream &= std::cout) const = 0;
+		display(std::ostream& = std::cout) const = 0;
 };
 
 class Query
@@ -32,15 +32,15 @@ class Query
 	friend Query operator&(const Query &, const Query &);
 
 public:
-	Queryz(const std::string &);
+	Query(const std::string &);
+
 	Query(const Query &c) : q(c.q), use(c.use) { ++*use; }
 	~Query() { decr_use(); }
 	Query &operator=(const Query &);
-
+	
 	std::set<TextQuery::line_no>
 		eval(const TextQuery &t) const { return q -> eval(t); }
 	std::ostream &display(std::ostream &os) const { return q -> display(os); }
-	std::ostream &operator<<(std::ostream &, const Query &);
 
 private:
 	Query(Query_base *query) : q(query), use(new std::size_t(1)) { }
@@ -57,15 +57,40 @@ private:
 	}
 };
 
+inline Query& Query::operator=(const Query &rhs)
+{
+	++*rhs.use;
+	decr_use();
+	q = rhs.q;
+	use = rhs.use;
+	return *this;
+}
+
+inline Query& Query::operator<<(std::ostream &os, const Query &q)
+{
+	return q.display(os);
+}
+
 class WordQuery: public Query_base
 {
 	friend class Query;
-	WordQuery(const std::string &s) : query_word(s) { }
 
-	std::set<line_no> eval(const TextQuery &t) const { return t.run_query(query_word); }
-	std::ostream &display(std::osteram &os) const { return os << query_word; }
+	WordQuery(const std::string &s): query_word(s) { }
+
+	std::set<line_no> eval(const TextQuery &t) const 
+	{
+		return t.exQuery(query_word); 
+	}
+
+	std::ostream& display(std::osteram &os) const 
+	{
+		return os << query_word; 
+	}
+
 	std::string query_word;
 };
+
+inline Query::Query(const std::string &s): q(new WordQuery(s)), use(new size_t(1)) { }
 
 class NotQuery: public Query_base
 {
@@ -73,7 +98,7 @@ class NotQuery: public Query_base
 	NotQuery(Query q) : query(q) { }
 
 	std::set<line_no> eval(const TextQuery &) const;
-	std::ostream &displat(std::ostream &os) const
+	std::ostream &display(std::ostream &os) const
 	{
 		return os << "~(" << query << ")" ;
 	}
@@ -86,14 +111,14 @@ class BinaryQuery: public Query_base
 {
 protected:
 	BinaryQuery(Query left, Query right, std::string op) :
-		ihs(left), rhs(right), oper(op) { }
+		lhs(left), rhs(right), oper(op) { }
 
 	std::ostream &display(std::ostream &os) const
 	{
 		return os << "(" << " " << oper << " " << rhs << ")";
 	}
 
-	const Query ihs, rhs;
+	const Query lhs, rhs;
 	const std::string oper;
 
 };
@@ -115,6 +140,22 @@ class OrQuery: public BinaryQuery
 
 	std::set<line_no> eval(const TextQuery &) const;
 };
+
+inline Query operator~(const Query &oper)
+{
+	return new NotQuery(oper);
+}
+
+inline Query operator|(const Query &lhs, const Query &rhs)
+{
+	return new OrQuery(lhs, rhs);
+
+}
+
+inline Query operator&(const Query &lhs, const Query &rhs)
+{
+	return new AndQuery(lhs, rhs);
+}
 
 
 
