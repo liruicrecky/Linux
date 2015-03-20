@@ -91,7 +91,7 @@ void initPad(int *pad)
 	int *fourPad = pad;
 
 	//random pos 6 of(0 - 7)
-	
+
 	int cnt, posNum;
 	int num, randomNum;
 	int tmp = -1;
@@ -352,15 +352,15 @@ void randomNum(int *fourArr)
 								fourPad[i * 4 + j] = 8;
 								break;
 						}
-						
+
 					}
 				}
 			}
 		}
 
-		
+
 	}
-   	
+
 }
 
 int checkWin(int *fourArr)

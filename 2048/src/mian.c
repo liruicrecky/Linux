@@ -1,8 +1,8 @@
 /*************************************************************************
-	> File Name: ./src/mian.c
-	> Author: Reacky
-	> Mail:3277632240@qq.com 
-	> Created Time: Thu 26 Feb 2015 08:06:50 PM CST
+  > File Name: ./src/mian.c
+  > Author: Reacky
+  > Mail:3277632240@qq.com 
+  > Created Time: Thu 26 Feb 2015 08:06:50 PM CST
  ************************************************************************/
 
 #include"2048.h"
