@@ -9,14 +9,27 @@
 
 void refreshChessesPad(char *pad)
 {
-	int i, j;
+	system("clear");
+	int i, j, k = 0;
 	char *chPad = pad;
 	//	┌ ┼ ┬ ┐ └ ┘ ┴ ├ ┤ ● ○ ─ │
-	
+
+	printf("  ");
+	for(i = 1;i <= 15;++i)
+	{
+		printf("%d ", i % 10);
+	}
+
+	printf("\n");
+
 	for(i = 0;i < 15;i++)
 	{
 		for(j = 0;j < 15;j++)
 		{
+			if(j == 0)
+			{
+				printf("%d ", ++k % 10);
+			}
 			if(i == 0)
 			{
 				if(chPad[15 * i + j] == '0')

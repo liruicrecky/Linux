@@ -79,6 +79,7 @@ int main(int argc, char *argv[])
 		if(flag == 0)
 		{
 			recvfrom(serverSocket, buf, sizeof(buf), 0, (struct sockaddr *)&clientSockAddr, &clientSockAddrSize);
+			setbuf(stdin, NULL);
 			sscanf(buf, "%d %d", &x, &y);
 			--x;
 			--y;
@@ -93,7 +94,7 @@ int main(int argc, char *argv[])
 			flag = 1;
 		}
 		memset(buf, 0, sizeof(buf));
-		fflush(stdin);
+		setbuf(stdin, NULL);
 		fgets(buf, sizeof(buf), stdin);
 		sscanf(buf, "%d %d", &x, &y);
 		--x;

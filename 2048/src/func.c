@@ -363,6 +363,25 @@ void randomNum(int *fourArr)
 
 }
 
+int checkSame(int *fourArr)
+{
+	int *fourPad = fourArr;
+	int i, j;
+
+	for(i = 0;i < 3;++i)
+	{
+		for(j = 0;j < 3;++j)
+		{
+			if(fourPad[i * 4 + j] == fourPad[i * 4 + j + 1] || fourPad[i * 4 + j] == fourPad[(i + 1) * 4 + j])
+			{
+				return 0;
+			}
+		}
+	}
+
+	return 1;
+}
+
 int checkWin(int *fourArr)
 {
 	int *fourPad = fourArr;
@@ -379,7 +398,7 @@ int checkWin(int *fourArr)
 		}
 	}
 
-	if(cnt == 0)
+	if(cnt == 0 && checkSame(fourArr))
 		return -1;
 	else
 		return 0;
