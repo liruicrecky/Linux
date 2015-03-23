@@ -17,6 +17,7 @@ int main(int argc, char *argv[])
 	x2 = *((char *)&a + 1);
 
 	printf("x1: %x, x2: %x\n", x1, x2);
+	printf("%x\n", *((char *)&a));
 
 	return 0;
 }
