@@ -18,29 +18,42 @@ class CHasFn
 
 public:
 
-	size_t operator()(const std::string &);
+	size_t operator()(const std::string &str)
+	{
+		size_t hash = 0;
+		for(size_t i = 0;i != str.size();++i)
+		{
+			hash = hash * 31 + str[i];
+		}
+	
+		return hash;
+	}
 
 };
 
 class CCache
 {
-	typedef std::tr1::unordered_map<std::string, CHasFn> cacheMap;
+	typedef std::tr1::unordered_map<std::string, std::string, CHasFn> cacheMap;
 
 private:
 
 	cacheMap _cache;
 	CThreadLock _lock;
 
+	std::string _cache_path;
 
 public:
 
-	CCache(const int &);
+	CCache(const std::string &);
 
 public:
 
 	cacheMap::iterator isMapped(const std::string &);
-	void writeToFile(std::ostream &);
-	void readFromFile(const std::string &);
+	void addToCache(const std::string &, const std::string &);
+	void writeToFile();
+	void readFromFile();
+
+	cacheMap *getHashMap() {return &_cache; }
 
 };
 

@@ -16,6 +16,7 @@
 #include<tr1/unordered_map>
 
 #include"Conf.h"
+#include"Cache.h"
 
 class CResult
 {
@@ -58,9 +59,11 @@ private:
 	INDEXDICT *_indexDict;
 	std::priority_queue<CResult, std::vector<CResult>, CCompare> _result;
 
+	CCache _cache;
+
 public:
 
-	CTask(CConf &, std::string, int);
+	CTask(CConf &, const char *, int, CCache &);
 
 public:
 

@@ -1,8 +1,8 @@
 /*************************************************************************
-	> File Name: /home/liruicheng/LinuxCode/cpp/amendtext/src/task/src/task.cpp
-	> Author: Reacky
-	> Mail:327763224@qq.com 
-	> Created Time: Mon 30 Mar 2015 08:41:54 PM CST
+  > File Name: /home/liruicheng/LinuxCode/cpp/amendtext/src/task/src/task.cpp
+  > Author: Reacky
+  > Mail:327763224@qq.com 
+  > Created Time: Mon 30 Mar 2015 08:41:54 PM CST
  ************************************************************************/
 
 #include"CTask.h"
@@ -15,11 +15,12 @@
 	((x) > ((y) > (z) ? (z) : (y)) ? ((y) > (z) ? (z) : (y)) : (x))
 
 
-CTask::CTask(CConf &conf, std::string buf, int fd) :
+CTask::CTask(CConf &conf, const char *buf, int fd, CCache &cache) :
 	_word(buf),
 	_fd(fd),
 	_vecDict(conf.getVecDict()),
-	_indexDict(conf.getIndexDict()) { }
+	_indexDict(conf.getIndexDict()),
+	_cache(cache) { }
 
 int CTask::editDistance(const std::string &X)
 {
@@ -28,7 +29,7 @@ int CTask::editDistance(const std::string &X)
 	int lenY = _word.size() + 1;
 
 	//new d-array
-	
+
 	int dArry[lenY][lenX];
 	memset(dArry, 0, sizeof(int) * lenX * lenY);
 
@@ -71,7 +72,7 @@ void CTask::satistic(const std::set<int> &wSet)
 		res._word = (*_vecDict)[*it].first;
 		res._eDict = editDistance((*_vecDict)[*it].first);
 		res._wFrequence = atoi((*_vecDict)[*it].second.c_str());
-		
+
 		_result.push(res);
 	}
 
@@ -84,26 +85,38 @@ void CTask::execute()
 
 	INDEXDICT::const_iterator indexIter;
 
-	for(std::string::size_type it = 0;it != _word.size();++it){
+	std::tr1::unordered_map<std::string, std::string, CHasFn>::iterator res;
 
-		std::string str(_word, it, 1);
-		indexIter = (*_indexDict).find(str);
-		satistic(indexIter -> second);
-	}
+	if((*(_cache.getHashMap())).end() != (res = _cache.isMapped(_word))){
 
-	
-	memset(buf, 0, sizeof(buf));
-	if(_result.empty()){
-
-		strcpy(buf, "no result");
+		memset(buf, 0, sizeof(buf));
+		strcpy(buf, (res -> second).c_str());
 		write(_fd, buf, sizeof(buf));
 
 	}else{
 
-		sprintf(buf, "%s %d", _result.top()._word.c_str(), _result.top()._eDict);
-		write(_fd, buf, sizeof(buf));
+		for(std::string::size_type it = 0;it != _word.size();++it){
+
+			std::string str(_word, it, 1);
+			indexIter = (*_indexDict).find(str);
+			satistic(indexIter -> second);
+		}
+
+
+		memset(buf, 0, sizeof(buf));
+		if(_result.empty()){
+
+			strcpy(buf, "no result");
+			write(_fd, buf, sizeof(buf));
+
+		}else{
+
+			sprintf(buf, "%s %d", _result.top()._word.c_str(), _result.top()._eDict);
+			write(_fd, buf, sizeof(buf));
+			_cache.addToCache(_word, _result.top()._word);
+		}
 	}
-	
+
 }
 
 

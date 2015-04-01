@@ -44,6 +44,10 @@ private:
 	int _threadNum;
 	int _queueSize;
 
+	/* cache data */
+
+	std::string _cache_path;
+
 	/* init function */
 
 	void initMap();
@@ -81,6 +85,12 @@ public:
 
 	VECDICT *getVecDict() {return &_vecDict; }
 	INDEXVECT *getIndexDict(){return &_indexVect; }
+
+public:
+
+	/* cache interface */
+
+	std::string getCachePath() {return _cache_path; }
 
 };
 

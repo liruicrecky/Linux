@@ -12,6 +12,8 @@
 #include"TLock.h"
 #include"TCond.h"
 #include"CTask.h"
+#include"Cache.h"
+
 #include<queue>
 #include<vector>
 #include<memory>
@@ -42,9 +44,6 @@ public:
 public:
 
 	void start();
-
-//	void addTask(std::function<void (int, std::string &, std::vector<std::pair<std::string, std::string> > &)>);
-//	std::function<void (int, std::string &, std::vector<std::pair<std::string, std::string> > &)> getTask();
 
 	void addTask(CTask);
 	CTask getTask();

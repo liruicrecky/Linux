@@ -20,7 +20,8 @@ CConf::CConf(const std::string &path)
 		exit(EXIT_FAILURE);
 	}
 	
-	std::cout << "-----Open configFile successfully-----" << std::endl;
+	std::cout << std::endl << "Init server, processing..." << std::endl
+		      <<"/-----Open config file success-----" << std::endl;
 
 	/* init dict */
 	
@@ -42,7 +43,7 @@ CConf::~CConf()
 void CConf::initMap()
 {
 	unsigned int pos;
-	std::string line, key, value;
+	std::string line;
 	while(getline(_ifs, line)){
 
 		pos = line.find('=');
@@ -74,7 +75,7 @@ void CConf::initVecDict()
 	*/
 
 	int pos;
-	std::string line, word, freque;
+	std::string line;
 	std::pair<std::string, std::string> pairWord;
 
 	while(getline(ifs, line)){
@@ -140,6 +141,13 @@ void CConf::initData()
 
 	finder = _map.find("QueueSize");
 	_queueSize = atoi((finder -> second).c_str());
+
+	/*
+	 * cache data
+	*/
+
+	finder = _map.find("CachePath");
+	_cache_path = finder -> second;
 }
 
 

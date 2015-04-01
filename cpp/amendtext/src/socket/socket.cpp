@@ -39,7 +39,7 @@ const void Socket::serInit(const InetAddr &sockAddr)
 		exit(EXIT_FAILURE);
 	}
 
-	std::cout << "server socket inited successfully!" << std::endl;
+	std::cout << " -----server socket init success-----" << std::endl;
 
 	//bind
 	
@@ -49,7 +49,7 @@ const void Socket::serInit(const InetAddr &sockAddr)
 		exit(EXIT_FAILURE);
 	}
 
-	std::cout << "server bind successfully" << std::endl;
+	std::cout << " -----server bind success-----" << std::endl;
 
 	_socket = tSocket;
 }

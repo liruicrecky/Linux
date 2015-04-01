@@ -9,13 +9,12 @@
 #include"SocketIO.h"
 #include"CTask.h"
 
+#include<iostream>
 #include<vector>
 #include<string.h>
 #include<sys/types.h>
 #include<sys/socket.h>
 #include<unistd.h>
-#include<stdio.h>
-#include<iostream>
 
 EPOLL::EPOLL(const int socket)
 {
@@ -29,14 +28,14 @@ EPOLL::~EPOLL()
 
 int EPOLL::epollCreate(const int socket)
 {
-	if(-1 == (_epollFd = epoll_create(1024)))
-	{
+	if(-1 == (_epollFd = epoll_create(1024))){
+
 		return -1;
 	}
 
 	_socket = socket;
 
-	printf("epoll create success\n");
+	std::cout << "Epoll created successfully" << std::endl;
 
 	return 0;
 }
@@ -54,7 +53,7 @@ int EPOLL::addToEpoll(const int socket)
 		return -1;
 	}
 
-	printf("add to epoll success\n");
+	std::cout << "Add socket to epoll successfully" << std::endl;
 
 	return 0;
 }
@@ -62,15 +61,16 @@ int EPOLL::addToEpoll(const int socket)
 int EPOLL::removeFromEpoll(const int Fd)
 {
 	if(-1 == epoll_ctl(_epollFd, EPOLL_CTL_DEL, Fd, NULL))
+
 		return -1;
 
-	printf("remove from epoll success\n");
+	std::cout << "Remove from epoll successfully" << std::endl;
 
 	return 0;
 }
 
 
-void EPOLL::isListenEpoll(const int socket, ThreadPool &pool, CConf &conf)
+void EPOLL::isListenEpoll(const int socket, ThreadPool &pool, CConf &conf, CCache &cache)
 {
 
 	memset(&_returnEpollEvents, 0, sizeof(_returnEpollEvents));
@@ -88,7 +88,7 @@ void EPOLL::isListenEpoll(const int socket, ThreadPool &pool, CConf &conf)
 		if(_returnEpollEvents[i].data.fd == socket)
 		{
 			int cliAccept = accept(_returnEpollEvents[i].data.fd, (struct sockaddr *)&tmpCliSockAddr, &cliLen);
-			std::cout << "a new alient online" << std::endl;
+			std::cout << "a new client online" << std::endl;
 
 			addToEpoll(cliAccept);
 		}
@@ -103,7 +103,7 @@ void EPOLL::isListenEpoll(const int socket, ThreadPool &pool, CConf &conf)
 			else
 			{
 				buf[strlen(buf) - 1] = '\0'; //notice the buf read from socket has char '\n' from client
-				CTask task(conf, buf, _returnEpollEvents[i].data.fd);
+				CTask task(conf, buf, _returnEpollEvents[i].data.fd, cache);
 				pool.addTask(task);
 			}
 		}

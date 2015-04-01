@@ -33,7 +33,7 @@ public:
 
 	int addToEpoll(const int);
 	int removeFromEpoll(const int);
-	void isListenEpoll(const int, ThreadPool &, CConf &);
+	void isListenEpoll(const int, ThreadPool &, CConf &, CCache &);
 
 };
 
