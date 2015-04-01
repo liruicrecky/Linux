@@ -73,7 +73,6 @@ int EPOLL::removeFromEpoll(const int Fd)
 void EPOLL::isListenEpoll(const int socket, ThreadPool &pool, CConf &conf)
 {
 
-	std::vector<int> vecListen;
 	memset(&_returnEpollEvents, 0, sizeof(_returnEpollEvents));
 
 	int readNum = epoll_wait(_epollFd, _returnEpollEvents, 1024, -1);

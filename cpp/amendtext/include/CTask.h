@@ -32,7 +32,14 @@ class CCompare
 public:
 	
 	bool operator()(const CResult &lhs, const CResult &rhs)
-	{ return lhs._eDict > rhs._eDict; }
+	{ 
+		if(lhs._eDict == rhs._eDict)
+
+			return lhs._wFrequence < rhs._wFrequence;
+		else
+
+			return lhs._eDict > rhs._eDict; 
+	}
 };
 
 class CTask
