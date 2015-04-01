@@ -11,7 +11,7 @@
 #include<string.h>
 #include<stdlib.h>
 
-CTask::CTask(CConf &conf, const char* buf, int fd) :
+CTask::CTask(CConf &conf, std::string buf, int fd) :
 	_word(buf),
 	_fd(fd),
 	_vecDict(conf.getVecDict()),
@@ -83,17 +83,17 @@ void CTask::satistic(const std::set<int> &wSet)
 void CTask::execute()
 {
 	char buf[1024];
-	std::cout << _word << std::endl;
 
-	std::string::size_type it = 0;
+	std::string::iterator it = _word.begin();
 	std::tr1::unordered_map<std::string, std::set<int> >::const_iterator indexIter;
 
 	std::set<int>::const_iterator miter;
 
-//	for(;it != _word.size();++it)
-//	{
-		std::string str(_word.substr(0,1));
-		std::cout << str << " ";
+	for(;it != _word.end() - 1;++it)
+	{
+		char s[1];
+		s[0] = *it;
+		std::string str(s);
 		indexIter = (*_indexDict).find(str);
 //		std::cout << indexIter -> first << std::endl;
 	//	for(miter = (indexIter -> second).begin();miter != (indexIter -> second).end();++miter)
@@ -101,7 +101,7 @@ void CTask::execute()
 	//		std::cout << *miter << " ";
 	//	}
 		satistic(indexIter -> second);
-//	}
+	}
 
 	
 	memset(buf, 0, sizeof(buf));
@@ -115,8 +115,6 @@ void CTask::execute()
 		sprintf(buf, "%s %d", _result.top()._word.c_str(), _result.top()._eDict);
 		write(_fd, buf, sizeof(buf));
 	}
-
-//	sockIO.sendBuf(buf, _fd, 1024);
 	
 }
 

@@ -47,7 +47,7 @@ private:
 
 public:
 
-	CTask(CConf &, const char*, int);
+	CTask(CConf &, std::string, int);
 
 public:
 

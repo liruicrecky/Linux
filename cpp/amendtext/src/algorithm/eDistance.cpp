@@ -19,6 +19,7 @@ int minInThree(int a, int b, int c)
 
 int EditDistanceDP(std::string X, std::string Y)
 {
+	std::cout << "l size: " << X.size() << " r size: " << Y.size() << std::endl;
 	//cal length
 	int lenX = X.size() + 1;
 	int lenY = Y.size() + 1;
@@ -93,7 +94,9 @@ int main(int argc, char **argv)
 //	std::cout << minInThree(atoi(argv[1]), atoi(argv[2]), atoi(argv[3])) << std::endl;
 
 	std::string x("apple");
-	std::string y("applr");
+	char y[10];
+
+	std::cin >> y;
 
 	int res = EditDistanceDP(x, y);
 
