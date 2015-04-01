@@ -15,8 +15,11 @@ Socket::Socket(const InetAddr &sockAddr, std::string &mode)
 	_prot = sockAddr.toPort();
 
 	if(mode == "tcp")
+
 		_type = SOCK_STREAM;
+
 	else if(mode == "udp")
+
 		_type = SOCK_DGRAM;
 
 }

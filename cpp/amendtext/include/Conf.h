@@ -26,52 +26,58 @@ class CConf : boost::noncopyable
 	
 private:
 
-	std::string ip;
-	int port;
-
-	VECDICT _vecDict;
-	MAP _map;
-	INDEXVECT _indexVect;
-//	std::map<std::string, std::set<int> > _indexVect;
-	std::ifstream _ifs;
-
-	int _threadNum;
-	int _queueSize;
-
-	void initMap();
-	void initVecDict();
-
-
-	void initData(); // socket, thread
-
-private: //socket
-
+	/* sock data */
 	std::string _ip;
 	std::string _mode;
 	int _port;
 
-private: 
+	/* dict data */
 
-public:  //init
-	
+	VECDICT _vecDict;
+	MAP _map;
+	INDEXVECT _indexVect;
+
+	std::ifstream _ifs;
+
+	/* thread data */
+
+	int _threadNum;
+	int _queueSize;
+
+	/* init function */
+
+	void initMap();
+	void initVecDict();
+	void indexToMap();
+	void initData();
+
+public:  
+
+	/* init class */
+
 	CConf() { }
 	~CConf();
 	explicit CConf(const std::string &);
-	void indexToMap();
 
 	
-public:  //socket
+public:  
+
+	/* socket interface */
 
 	std::string Ip() {return _ip; }
 	std::string Mode() {return _mode; }
 	int Port() {return _port; }
 
-public: //thread
+public: 
+
+	/* thread interface */
 
 	int ThreadNum() {return _threadNum; }
 	int QueueSize() {return _queueSize; }
 
-public: //return map
+public: 
+
+	/* map interface */
 
 	VECDICT *getVecDict() {return &_vecDict; }
 	INDEXVECT *getIndexDict(){return &_indexVect; }

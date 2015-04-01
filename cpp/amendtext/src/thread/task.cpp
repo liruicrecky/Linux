@@ -11,17 +11,15 @@
 #include<string.h>
 #include<stdlib.h>
 
+#define MININTHREE(x, y, z) \
+	((x) > ((y) > (z) ? (z) : (y)) ? ((y) > (z) ? (z) : (y)) : (x))
+
+
 CTask::CTask(CConf &conf, std::string buf, int fd) :
 	_word(buf),
 	_fd(fd),
 	_vecDict(conf.getVecDict()),
 	_indexDict(conf.getIndexDict()) { }
-
-int minInThree(int a, int b, int c)
-{
-	int tmp = a > b ? b : a;
-	return tmp > c ? c : tmp;
-}
 
 int CTask::editDistance(const std::string &X)
 {
@@ -55,7 +53,7 @@ int CTask::editDistance(const std::string &X)
 			left = dArry[i][j - 1] + 1;
 			top = dArry[i - 1][j] + 1;
 
-			dArry[i][j] = minInThree(left, top, lefttop);
+			dArry[i][j] = MININTHREE(left, top, lefttop);
 		}
 	}
 
@@ -86,8 +84,6 @@ void CTask::execute()
 
 	std::string::iterator it = _word.begin();
 	INDEXDICT::const_iterator indexIter;
-
-	std::set<int>::const_iterator miter;
 
 	for(;it != _word.end();++it)
 	{

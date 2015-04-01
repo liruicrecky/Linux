@@ -10,6 +10,8 @@
 #include<string.h>
 
 
+#define MININTHREE(x, y, z) \
+	((x) > ((y) > (z) ? (z) : (y)) ? ((y) > (z) ? (z) : (y)) : (x))
 
 int minInThree(int a, int b, int c)
 {
@@ -50,7 +52,7 @@ int EditDistanceDP(std::string X, std::string Y)
 			left = dArry[i][j - 1] + 1;
 			top = dArry[i - 1][j] + 1;
 
-			dArry[i][j] = minInThree(left, top, lefttop);
+			dArry[i][j] = MININTHREE(left, top, lefttop);
 		}
 	}
 

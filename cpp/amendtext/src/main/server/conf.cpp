@@ -11,22 +11,24 @@
 
 CConf::CConf(const std::string &path)
 {
+	/* open config file */
+
 	_ifs.open(path.c_str());
-	if(!_ifs)
-	{
+	if(!_ifs){
+
 		std::cout << "open conf file failed" << std::endl;
 		exit(EXIT_FAILURE);
 	}
 	
-	std::cout << "Open configfile successfully" << std::endl;
+	std::cout << "-----Open configFile successfully-----" << std::endl;
 
-	//init wordMap
+	/* init dict */
 	
 	initMap();
 	initVecDict();
 	indexToMap();
 
-	//init data
+	/* init data */
 	
 	initData();
 	
@@ -41,50 +43,45 @@ void CConf::initMap()
 {
 	unsigned int pos;
 	std::string line, key, value;
-	while(getline(_ifs, line))
-	{
+	while(getline(_ifs, line)){
+
 		pos = line.find('=');
 		if(std::string::npos == pos)
 			continue;
+
 		_map.insert(std::pair<std::string, std::string>(line.substr(0, pos), line.substr(pos + 1)));
 	}
-
-/*
-	for(std::map<std::string, std::string>::iterator iter = _map.begin();iter != _map.end();++iter)
-	{
-		std::cout << iter -> first << " " << iter -> second << std::endl;
-	}
-*/
 }
 
 void CConf::initVecDict()
 {
-	//find word_map path and open the file
+	/*
+	 * find word_map path and open the file
+	*/
+
 	MAP::iterator it = _map.find("Word_map");
 	std::ifstream ifs((it -> second).c_str());
-	if(!ifs)
-	{
+
+	if(!ifs){
+
 		perror("Open word file failed!");
 		exit(EXIT_FAILURE);
 	}
 
-	//find the ' ' to get key(word) and value(freque)
-	//put into vector<pair<string, string> >
+	/*
+	 * find char ' ' to get key(word) and value(freque)
+	 * and put them into vector<pair<string, string> >
+	*/
+
 	int pos;
 	std::string line, word, freque;
 	std::pair<std::string, std::string> pairWord;
 
-	while(getline(ifs, line))
-	{
+	while(getline(ifs, line)){
+
 		pos = line.find(' ');
 		_vecDict.push_back(make_pair(line.substr(0, pos), line.substr(pos + 1)));
 	}
-/*
-	for(std::vector<std::pair<std::string, std::string> >::iterator iter = _vecDict.begin();iter != _vecDict.end();++iter)
-	{
-		std::cout << iter -> first << " "  << iter -> second << std::endl;
-	}
-*/
 
 	ifs.close();
 }
@@ -94,13 +91,10 @@ void CConf::indexToMap()
 	VECDICT::size_type ix = 0;
 	std::string::size_type iy = 0;
 	
-	for(;ix != _vecDict.size();++ix)
-	{
-	//	for(iy = 0;iy != _vecDict[ix].first.size();++iy)
-//		{
-			std::string substr(_vecDict[ix].first.substr(0, 1));
-			_indexVect[substr].insert(ix);
-	//	}
+	for(;ix != _vecDict.size();++ix){
+
+		std::string substr(_vecDict[ix].first.substr(0, 1));
+		_indexVect[substr].insert(ix);
 	}
 
 /*
@@ -124,7 +118,10 @@ void CConf::initData()
 {
 	MAP::iterator finder;
 
-	//socket
+	/*
+	 * socket data
+	*/
+
 	finder = _map.find("Ip");
 	_ip = finder -> second;
 
@@ -134,7 +131,10 @@ void CConf::initData()
 	finder = _map.find("Mode");
 	_mode = finder -> second;
 
-	//thread
+	/*
+	 * thread data
+	*/
+
 	finder = _map.find("ThreadNum");
 	_threadNum = atoi((finder -> second).c_str());
 

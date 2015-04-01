@@ -14,6 +14,7 @@
 
 class Socket : boost::noncopyable
 {
+	
 private:
 
 	int _socket;
@@ -26,10 +27,7 @@ public:
 	Socket(const InetAddr &, std::string &);
 	~Socket();
 
-	int getSocket() const
-	{
-		return _socket;
-	}
+	int getSocket() const {return _socket; }
 	const void serInit(const InetAddr &);
 	const void serListen(int);
 	const void cliInit(const InetAddr &);
