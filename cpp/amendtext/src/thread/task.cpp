@@ -85,21 +85,16 @@ void CTask::execute()
 	char buf[1024];
 
 	std::string::iterator it = _word.begin();
-	std::tr1::unordered_map<std::string, std::set<int> >::const_iterator indexIter;
+	INDEXDICT::const_iterator indexIter;
 
 	std::set<int>::const_iterator miter;
 
-	for(;it != _word.end() - 1;++it)
+	for(;it != _word.end();++it)
 	{
 		char s[1];
 		s[0] = *it;
 		std::string str(s);
 		indexIter = (*_indexDict).find(str);
-//		std::cout << indexIter -> first << std::endl;
-	//	for(miter = (indexIter -> second).begin();miter != (indexIter -> second).end();++miter)
-	//	{
-	//		std::cout << *miter << " ";
-	//	}
 		satistic(indexIter -> second);
 	}
 

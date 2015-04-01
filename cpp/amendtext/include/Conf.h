@@ -19,19 +19,30 @@
 
 class CConf : boost::noncopyable
 {
+
+	typedef std::vector<std::pair<std::string, std::string> > VECDICT;
+	typedef std::map<std::string, std::string> MAP;
+	typedef std::tr1::unordered_map<std::string, std::set<int> > INDEXVECT;
+	
 private:
 
 	std::string ip;
 	int port;
 
-	std::vector<std::pair<std::string, std::string> > _vecDict;
-	std::map<std::string, std::string> _map;
-	std::tr1::unordered_map<std::string, std::set<int> > _indexVect;
+	VECDICT _vecDict;
+	MAP _map;
+	INDEXVECT _indexVect;
 //	std::map<std::string, std::set<int> > _indexVect;
 	std::ifstream _ifs;
 
+	int _threadNum;
+	int _queueSize;
+
 	void initMap();
 	void initVecDict();
+
+
+	void initData(); // socket, thread
 
 private: //socket
 
@@ -39,12 +50,7 @@ private: //socket
 	std::string _mode;
 	int _port;
 
-	void initAddr();
-
 private: 
-
-
-
 
 public:  //init
 	
@@ -60,12 +66,15 @@ public:  //socket
 	std::string Mode() {return _mode; }
 	int Port() {return _port; }
 
+public: //thread
+
+	int ThreadNum() {return _threadNum; }
+	int QueueSize() {return _queueSize; }
 
 public: //return map
 
-	std::vector<std::pair<std::string, std::string> > *getVecDict() {return &_vecDict; }
-
-	std::tr1::unordered_map<std::string, std::set<int> > *getIndexDict(){return &_indexVect; }
+	VECDICT *getVecDict() {return &_vecDict; }
+	INDEXVECT *getIndexDict(){return &_indexVect; }
 
 };
 

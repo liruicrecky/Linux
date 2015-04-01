@@ -19,6 +19,7 @@
 
 class CResult
 {
+
 public:
 	std::string _word;
 	int _eDict;
@@ -27,6 +28,7 @@ public:
 
 class CCompare
 {
+
 public:
 	
 	bool operator()(const CResult &lhs, const CResult &rhs)
@@ -35,14 +37,18 @@ public:
 
 class CTask
 {
+
+	typedef std::vector<std::pair<std::string, std::string> > VECDICT;
+	typedef std::tr1::unordered_map<std::string, std::set<int> > INDEXDICT;
+
 private:
 
 	std::string _word;
 	struct sockaddr_in _addr;
 	int _fd;
 
-	std::vector<std::pair<std::string, std::string> > *_vecDict;
-	std::tr1::unordered_map<std::string, std::set<int> > *_indexDict;
+	VECDICT *_vecDict;
+	INDEXDICT *_indexDict;
 	std::priority_queue<CResult, std::vector<CResult>, CCompare> _result;
 
 public:
@@ -57,8 +63,6 @@ public:
 
 public:
 
-	void setWord(const char* buf) {_word = buf; }
-	void setFd(int fd) {_fd = fd; }
 	void setSockAddr(struct sockaddr_in &);
 
 };

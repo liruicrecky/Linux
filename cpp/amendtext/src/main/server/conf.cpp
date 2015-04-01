@@ -26,9 +26,9 @@ CConf::CConf(const std::string &path)
 	initVecDict();
 	indexToMap();
 
-	//init socket
+	//init data
 	
-	initAddr();
+	initData();
 	
 }
 
@@ -60,7 +60,7 @@ void CConf::initMap()
 void CConf::initVecDict()
 {
 	//find word_map path and open the file
-	std::map<std::string, std::string>::iterator it = _map.find("Word_map");
+	MAP::iterator it = _map.find("Word_map");
 	std::ifstream ifs((it -> second).c_str());
 	if(!ifs)
 	{
@@ -91,7 +91,7 @@ void CConf::initVecDict()
 
 void CConf::indexToMap()
 {
-	std::vector<std::pair<std::string, std::string> >::size_type ix = 0;
+	VECDICT::size_type ix = 0;
 	std::string::size_type iy = 0;
 	
 	for(;ix != _vecDict.size();++ix)
@@ -120,17 +120,26 @@ void CConf::indexToMap()
 }
 
 
-void CConf::initAddr()
+void CConf::initData()
 {
-	std::map<std::string, std::string>::iterator ip, port, mode;
-			
-	ip = _map.find("Ip");
-	port = _map.find("Port");
-	mode = _map.find("Mode");
+	MAP::iterator finder;
 
-	_ip = ip -> second;
-	_port = atoi((port -> second).c_str());
-	_mode = mode -> second;
+	//socket
+	finder = _map.find("Ip");
+	_ip = finder -> second;
+
+	finder = _map.find("Port");
+	_port = atoi((finder -> second).c_str());
+
+	finder = _map.find("Mode");
+	_mode = finder -> second;
+
+	//thread
+	finder = _map.find("ThreadNum");
+	_threadNum = atoi((finder -> second).c_str());
+
+	finder = _map.find("QueueSize");
+	_queueSize = atoi((finder -> second).c_str());
 }
 
 

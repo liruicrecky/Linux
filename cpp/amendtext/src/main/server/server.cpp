@@ -24,7 +24,7 @@ int main(int argc, char **argv)
 	CConf conf(argv[1]);
 
 	//init threadpool
-	ThreadPool pool(10, 100);
+	ThreadPool pool(conf.ThreadNum(), conf.QueueSize());
 	pool.start();
 
 	//init socket
