@@ -41,10 +41,10 @@ int CTask::editDistance(const std::string &X)
 	for(i = 1;i != lenY;++i)
 		dArry[i][0] = i;
 
-	for(i = 1;i != lenY;++i)
-	{
-		for(j = 1;j != lenX;++j)
-		{
+	for(i = 1;i != lenY;++i){
+
+		for(j = 1;j != lenX;++j){
+
 			if(_word[i - 1] == X[j - 1])
 				lefttop = dArry[i - 1][j - 1];
 			else
@@ -66,8 +66,8 @@ void CTask::satistic(const std::set<int> &wSet)
 
 	std::set<int>::const_iterator it = wSet.begin();
 
-	for(;it != wSet.end();++it)
-	{
+	for(;it != wSet.end();++it){
+
 		res._word = (*_vecDict)[*it].first;
 		res._eDict = editDistance((*_vecDict)[*it].first);
 		res._wFrequence = atoi((*_vecDict)[*it].second.c_str());
@@ -82,27 +82,24 @@ void CTask::execute()
 {
 	char buf[1024];
 
-	std::string::iterator it = _word.begin();
 	INDEXDICT::const_iterator indexIter;
 
-	for(;it != _word.end();++it)
-	{
-		char s[1];
-		s[0] = *it;
-		std::string str(s);
+	for(std::string::size_type it = 0;it != _word.size();++it){
+
+		std::string str(_word, it, 1);
 		indexIter = (*_indexDict).find(str);
 		satistic(indexIter -> second);
 	}
 
 	
 	memset(buf, 0, sizeof(buf));
-	if(_result.empty())
-	{
+	if(_result.empty()){
+
 		strcpy(buf, "no result");
 		write(_fd, buf, sizeof(buf));
-	}
-	else
-	{
+
+	}else{
+
 		sprintf(buf, "%s %d", _result.top()._word.c_str(), _result.top()._eDict);
 		write(_fd, buf, sizeof(buf));
 	}

@@ -96,8 +96,8 @@ void CConf::indexToMap()
 		std::string substr(_vecDict[ix].first.substr(0, 1));
 		_indexVect[substr].insert(ix);
 	}
-
 /*
+
 	std::tr1::unordered_map<std::string, std::set<int> >::const_iterator iter = _indexVect.begin();
 	std::set<int>::const_iterator siter;
 	for(;iter != _indexVect.end();++iter)

@@ -104,7 +104,6 @@ void EPOLL::isListenEpoll(const int socket, ThreadPool &pool, CConf &conf)
 			else
 			{
 				buf[strlen(buf) - 1] = '\0'; //notice the buf read from socket has char '\n' from client
-				std::cout << buf << " " << strlen(buf) << std::endl;
 				CTask task(conf, buf, _returnEpollEvents[i].data.fd);
 				pool.addTask(task);
 			}
