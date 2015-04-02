@@ -33,7 +33,7 @@ public:
 
 class CCache
 {
-	typedef std::tr1::unordered_map<std::string, std::string, CHasFn> cacheMap;
+	typedef std::tr1::unordered_map<std::string, std::string> cacheMap;
 
 private:
 
@@ -44,7 +44,7 @@ private:
 
 public:
 
-	CCache(const std::string &);
+	CCache(const std::string &);	
 
 public:
 

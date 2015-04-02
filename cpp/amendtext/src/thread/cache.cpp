@@ -31,7 +31,7 @@ void CCache::writeToFile()
 {
 	std::ofstream ofs(_cache_path.c_str());
 
-	std::tr1::unordered_map<std::string, std::string, CHasFn>::iterator it = _cache.begin();
+	std::tr1::unordered_map<std::string, std::string>::iterator it = _cache.begin();
 
 	for(;it != _cache.end();++it){
 

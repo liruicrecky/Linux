@@ -15,12 +15,11 @@
 	((x) > ((y) > (z) ? (z) : (y)) ? ((y) > (z) ? (z) : (y)) : (x))
 
 
-CTask::CTask(CConf &conf, const char *buf, int fd, CCache &cache) :
+CTask::CTask(CConf &conf, const char *buf, int fd) :
 	_word(buf),
 	_fd(fd),
 	_vecDict(conf.getVecDict()),
-	_indexDict(conf.getIndexDict()),
-	_cache(cache) { }
+	_indexDict(conf.getIndexDict()) { }
 
 int CTask::editDistance(const std::string &X)
 {
@@ -79,7 +78,7 @@ void CTask::satistic(const std::set<int> &wSet)
 }
 
 
-void CTask::execute()
+void CTask::execute(CCache &cache)
 {
 	char buf[1024];
 
@@ -87,7 +86,7 @@ void CTask::execute()
 
 	std::tr1::unordered_map<std::string, std::string, CHasFn>::iterator res;
 
-	if((*(_cache.getHashMap())).end() != (res = _cache.isMapped(_word))){
+	if((*(cache.getHashMap())).end() != (res = cache.isMapped(_word))){
 
 		memset(buf, 0, sizeof(buf));
 		strcpy(buf, (res -> second).c_str());
@@ -113,10 +112,11 @@ void CTask::execute()
 
 			sprintf(buf, "%s %d", _result.top()._word.c_str(), _result.top()._eDict);
 			write(_fd, buf, sizeof(buf));
-			_cache.addToCache(_word, _result.top()._word);
+			cache.addToCache(_word, _result.top()._word);
 		}
 	}
 
+	cache.writeToFile();
 }
 
 

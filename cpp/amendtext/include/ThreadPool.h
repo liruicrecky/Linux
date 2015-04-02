@@ -37,9 +37,11 @@ private:
 	CThreadCond _full;
 	mutable CThreadLock _mutex;
 
+	CCache _cache;
+
 public:
 
-	ThreadPool(size_t, size_t);
+	ThreadPool(size_t, size_t, std::string &);
 
 public:
 

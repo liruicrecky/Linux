@@ -70,7 +70,7 @@ int EPOLL::removeFromEpoll(const int Fd)
 }
 
 
-void EPOLL::isListenEpoll(const int socket, ThreadPool &pool, CConf &conf, CCache &cache)
+void EPOLL::isListenEpoll(const int socket, ThreadPool &pool, CConf &conf)
 {
 
 	memset(&_returnEpollEvents, 0, sizeof(_returnEpollEvents));
@@ -103,7 +103,7 @@ void EPOLL::isListenEpoll(const int socket, ThreadPool &pool, CConf &conf, CCach
 			else
 			{
 				buf[strlen(buf) - 1] = '\0'; //notice the buf read from socket has char '\n' from client
-				CTask task(conf, buf, _returnEpollEvents[i].data.fd, cache);
+				CTask task(conf, buf, _returnEpollEvents[i].data.fd);
 				pool.addTask(task);
 			}
 		}

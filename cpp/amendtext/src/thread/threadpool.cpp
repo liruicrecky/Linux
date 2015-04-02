@@ -9,12 +9,13 @@
 
 #include<iostream>
 
-ThreadPool::ThreadPool(size_t threadNum, size_t queueSize) : 
+ThreadPool::ThreadPool(size_t threadNum, size_t queueSize, std::string &path) : 
 	_queueSize(queueSize),
 	_isStarting(false),
 	_threadNum(threadNum),
 	_empty(_mutex),
-	_full(_mutex) {  }
+	_full(_mutex),
+    _cache(path) {  }
 
 void ThreadPool::start()
 {
@@ -59,7 +60,8 @@ void ThreadPool::runThread()
 	while(1)
 	{
 		CTask task(getTask());
-		task.execute();
+		task.execute(_cache);
 	}
 }
+
 

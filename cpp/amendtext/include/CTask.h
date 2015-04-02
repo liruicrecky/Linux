@@ -59,17 +59,15 @@ private:
 	INDEXDICT *_indexDict;
 	std::priority_queue<CResult, std::vector<CResult>, CCompare> _result;
 
-	CCache _cache;
-
 public:
 
-	CTask(CConf &, const char *, int, CCache &);
+	CTask(CConf &, const char *, int);
 
 public:
 
 	void satistic(const std::set<int> &);
 	int editDistance(const std::string &);
-	void execute();
+	void execute(CCache &);
 
 public:
 

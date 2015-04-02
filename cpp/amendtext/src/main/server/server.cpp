@@ -23,11 +23,9 @@ int main(int argc, char **argv)
 	//init conf file
 	CConf conf(argv[1]);
 
-	//init cache
-	CCache cache(conf.getCachePath());
-
 	//init threadpool
-	ThreadPool pool(conf.ThreadNum(), conf.QueueSize());
+	std::string path = conf.getCachePath();
+	ThreadPool pool(conf.ThreadNum(), conf.QueueSize(), path);
 	pool.start();
 
 	//init socket
@@ -48,7 +46,7 @@ int main(int argc, char **argv)
 
 	while(1)
 	{
-		serEpoll.isListenEpoll(serSocket.getSocket(), pool, conf, cache);
+		serEpoll.isListenEpoll(serSocket.getSocket(), pool, conf);
 	}
 
 	return 0;
