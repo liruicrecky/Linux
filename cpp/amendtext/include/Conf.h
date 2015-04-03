@@ -51,7 +51,7 @@ private:
 	/* init function */
 
 	void initMap();
-	void initVecDict();
+	void initVecDict(std::string &);
 	void indexToMap();
 	void initData();
 

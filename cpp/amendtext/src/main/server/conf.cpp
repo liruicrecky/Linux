@@ -26,7 +26,20 @@ CConf::CConf(const std::string &path)
 	/* init dict */
 	
 	initMap();
-	initVecDict();
+
+	/*
+	 *  init cn and en dict
+	 */ 
+
+	MAP::iterator it;
+
+	it = _map.find("Word_map_en");
+	initVecDict(it -> second);
+
+	it = _map.find("Word_map_cn");
+	initVecDict(it -> second);
+
+
 	indexToMap();
 
 	/* init data */
@@ -54,14 +67,13 @@ void CConf::initMap()
 	}
 }
 
-void CConf::initVecDict()
+void CConf::initVecDict(std::string &path)
 {
 	/*
 	 * find word_map path and open the file
-	*/
+	 */
 
-	MAP::iterator it = _map.find("Word_map");
-	std::ifstream ifs((it -> second).c_str());
+	std::ifstream ifs(path.c_str());
 
 	if(!ifs){
 
@@ -90,12 +102,19 @@ void CConf::initVecDict()
 void CConf::indexToMap()
 {
 	VECDICT::size_type ix = 0;
-	std::string::size_type iy = 0;
-	
+
 	for(;ix != _vecDict.size();++ix){
 
-		std::string substr(_vecDict[ix].first.substr(0, 1));
-		_indexVect[substr].insert(ix);
+		if(_vecDict[ix].first[0] & (1 << 7))
+		{
+			std::string substr(_vecDict[ix].first.substr(0, 3));
+			_indexVect[substr].insert(ix);
+
+		}else{
+
+			std::string substr(_vecDict[ix].first.substr(0, 1));
+			_indexVect[substr].insert(ix);
+		}
 	}
 /*
 

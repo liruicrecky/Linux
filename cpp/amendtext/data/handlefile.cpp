@@ -94,7 +94,7 @@ int main(int argc, char **argv)
 	strcpy(path, argv[1]);
 	cout << "processing..." << endl;
 	getDir(path);
-	ofstream ofs("dictmap.txt");
+	ofstream ofs("dictmapen.txt");
 
 	for(map<string, int>::iterator miter = wordcnt.begin();miter != wordcnt.end();++miter)
 	{

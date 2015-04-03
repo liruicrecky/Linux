@@ -86,6 +86,8 @@ void CTask::execute(CCache &cache)
 
 	std::tr1::unordered_map<std::string, std::string, CHasFn>::iterator res;
 
+	std::string str;
+
 	if((*(cache.getHashMap())).end() != (res = cache.isMapped(_word))){
 
 		memset(buf, 0, sizeof(buf));
@@ -96,8 +98,18 @@ void CTask::execute(CCache &cache)
 
 		for(std::string::size_type it = 0;it != _word.size();++it){
 
-			std::string str(_word, it, 1);
-			indexIter = (*_indexDict).find(str);
+			if(_word[it] & (1 << 7)){
+
+				str = _word.substr(it, 3);
+				indexIter = (*_indexDict).find(str);
+				it += 2;
+				
+			}else{
+
+				str = _word.substr(it, 1);
+				indexIter = (*_indexDict).find(str);
+			}
+
 			satistic(indexIter -> second);
 		}
 
