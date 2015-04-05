@@ -13,6 +13,7 @@
 
 #include"TLock.h"
 
+
 class CHasFn
 {
 
@@ -30,6 +31,7 @@ public:
 	}
 
 };
+
 
 class CCache
 {

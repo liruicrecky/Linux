@@ -24,11 +24,14 @@ CCache::cacheMap::iterator CCache::isMapped(const std::string &str)
 
 void CCache::addToCache(const std::string &ori, const std::string &fix)
 {
+	CThreadLockGuard lock(_lock);
 	_cache.insert(std::pair<std::string, std::string>(ori, fix));
 }
 
 void CCache::writeToFile()
 {
+	CThreadLockGuard lock(_lock);
+
 	std::ofstream ofs(_cache_path.c_str());
 
 	std::tr1::unordered_map<std::string, std::string>::iterator it = _cache.begin();

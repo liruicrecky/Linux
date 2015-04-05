@@ -83,7 +83,7 @@ int main(int argc, char *argv[])
 		exit(1);
 	}
 
-	//sdd process 
+	//add process 
 
 	int index;
 

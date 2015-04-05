@@ -82,14 +82,14 @@ void EPOLL::isListenEpoll(const int socket, ThreadPool &pool, CConf &conf)
 	//	struct sockaddr_in cliSockAddr[1024];
 	struct sockaddr_in tmpCliSockAddr;
 	socklen_t cliLen = sizeof(struct sockaddr_in);
-
+	int clientnum = 0;
 	for(int i = 0;i != readNum;++i)
 	{
 		if(_returnEpollEvents[i].data.fd == socket)
 		{
 			int cliAccept = accept(_returnEpollEvents[i].data.fd, (struct sockaddr *)&tmpCliSockAddr, &cliLen);
 			std::cout << "a new client online" << std::endl;
-
+			std::cout << "cli num: " << ++clientnum << std::endl;
 			addToEpoll(cliAccept);
 		}
 		else if(_returnEpollEvents[i].events & EPOLLIN)

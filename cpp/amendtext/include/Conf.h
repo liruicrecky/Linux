@@ -48,6 +48,9 @@ private:
 
 	std::string _cache_path;
 
+	std::string _redis_ip;
+	int _redis_port;
+
 	/* init function */
 
 	void initMap();
@@ -91,6 +94,11 @@ public:
 	/* cache interface */
 
 	std::string getCachePath() {return _cache_path; }
+
+	/* redis interface */
+
+	std::string getRedisIp() {return _redis_ip; }
+	int getRedisPort() {return _redis_port; }
 
 };
 

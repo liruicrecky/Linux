@@ -15,7 +15,16 @@ ThreadPool::ThreadPool(size_t threadNum, size_t queueSize, std::string &path) :
 	_threadNum(threadNum),
 	_empty(_mutex),
 	_full(_mutex),
-    _cache(path) {  }
+//	_redis()
+    _cache(path)
+    
+{
+//	std::string ip = conf.getRedisIp();
+//	std::string path = conf.getCachePath();
+
+//	_redis.connect(ip, conf.getRedisPort());
+//	_redis.setData(path);
+}
 
 void ThreadPool::start()
 {

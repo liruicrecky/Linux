@@ -17,6 +17,7 @@
 
 #include"Conf.h"
 #include"Cache.h"
+//#include"Redis.h"
 
 class CResult
 {

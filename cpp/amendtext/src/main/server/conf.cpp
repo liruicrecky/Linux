@@ -82,9 +82,9 @@ void CConf::initVecDict(std::string &path)
 	}
 
 	/*
-	 * find char ' ' to get key(word) and value(freque)
-	 * and put them into vector<pair<string, string> >
-	*/
+	 *  find char ' ' to get key(word) and value(freque)
+	 *  and put them into vector<pair<string, string> >
+	 */
 
 	int pos;
 	std::string line;
@@ -139,8 +139,8 @@ void CConf::initData()
 	MAP::iterator finder;
 
 	/*
-	 * socket data
-	*/
+	 *  socket data
+	 */
 
 	finder = _map.find("Ip");
 	_ip = finder -> second;
@@ -152,8 +152,8 @@ void CConf::initData()
 	_mode = finder -> second;
 
 	/*
-	 * thread data
-	*/
+	 *  thread data
+	 */
 
 	finder = _map.find("ThreadNum");
 	_threadNum = atoi((finder -> second).c_str());
@@ -162,11 +162,21 @@ void CConf::initData()
 	_queueSize = atoi((finder -> second).c_str());
 
 	/*
-	 * cache data
-	*/
+	 *  cache data
+	 */
 
 	finder = _map.find("CachePath");
 	_cache_path = finder -> second;
+
+	/*
+	 *  redis data
+	 */
+
+	finder = _map.find("Redis_IP");
+	_redis_ip = finder -> second;
+
+	finder = _map.find("Redis_PORT");
+	_redis_port = atoi((finder -> second).c_str());
 }
 
 

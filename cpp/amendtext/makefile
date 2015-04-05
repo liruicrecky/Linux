@@ -2,7 +2,7 @@ INC_DIR:=./include
 SRC_DIR:=./src/main/server/ ./src/socket/ ./src/thread/
 SRCS:=$(wildcard ./src/main/server/*.cpp) $(wildcard ./src/socket/*.cpp) $(wildcard ./src/thread/*.cpp)
 #OBJS:= $(patsubst %.cpp, %.cco, $(SRCS)) 
-LIBS:= -lpthread
+LIBS:= -lpthread -lhiredis
 
 CXX:=g++
 

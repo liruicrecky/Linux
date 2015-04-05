@@ -12,7 +12,9 @@
 #include"TLock.h"
 #include"TCond.h"
 #include"CTask.h"
-#include"Cache.h"
+//#include"Cache.h"
+#include"Redis.h"
+#include"Conf.h"
 
 #include<queue>
 #include<vector>
@@ -38,6 +40,7 @@ private:
 	mutable CThreadLock _mutex;
 
 	CCache _cache;
+//	Redis _redis;
 
 public:
 

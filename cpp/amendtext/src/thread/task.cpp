@@ -89,10 +89,19 @@ void CTask::execute(CCache &cache)
 	std::string str;
 
 	if((*(cache.getHashMap())).end() != (res = cache.isMapped(_word))){
+	
 
 		memset(buf, 0, sizeof(buf));
 		strcpy(buf, (res -> second).c_str());
 		write(_fd, buf, sizeof(buf));
+	
+//	if(redis.wordExists(_word)){
+//	if("nil" == (str = redis.getVal(_word))){
+
+	//	str = redis.getVal(_word);
+//		memset(buf, 0, sizeof(buf));
+//		strcpy(buf, str.c_str());
+//		write(_fd, buf, sizeof(buf));
 
 	}else{
 
