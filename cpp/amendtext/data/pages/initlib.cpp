@@ -1,8 +1,8 @@
 /*************************************************************************
-  > File Name: handletf8.cpp
-  > Author: Reacky
-  > Mail:327763224@qq.com 
-  > Created Time: Thu 02 Apr 2015 07:48:02 PM CST
+	> File Name: initlib.cpp
+	> Author: Reacky
+	> Mail:327763224@qq.com 
+	> Created Time: Thu 09 Apr 2015 10:19:33 AM CST
  ************************************************************************/
 
 extern "C" 
@@ -18,25 +18,26 @@ extern "C"
 #include<string.h>
 #include<unistd.h>
 #include<stdlib.h>
+#include<stdio.h>
 
 #include<iostream>
+#include<vector>
 #include<map>
+#include<utility>
 #include<string>
 #include<fstream>
 #include<sstream>
+#include<algorithm>
+#include<locale>
 
 using namespace std;
 
-map<string, int> wcMap;
 char line[40480];
-
-
 
 friso_t friso = friso_new();
 friso_config_t config = friso_new_config();
 friso_task_t task = friso_new_task();
-
-
+static int i = 0;
 
 static fstring getLine(const char *str, fstring __dst ) 
 {
@@ -53,35 +54,61 @@ static fstring getLine(const char *str, fstring __dst )
 	return ( c == EOF && cs == __dst ) ? NULL : __dst;
 }
 
-void frisoFile(string &text)
-{
-	memset(line, 0, sizeof(line));
-	getLine(text.c_str(), line);
-	friso_set_text(task, line);
-
-	while(NULL != (config -> next_token(friso, config, task))){
-
-		++wcMap[task -> token -> word];
-	}
-
-}
-
 
 
 void handleFile(char *path)
 {
-	ifstream ifs(path);
+	int flag;
+	wifstream ifs(path);
+//	wofstream ofs;
 
-	string line;
+	ios::sync_with_stdio(false);
+	std::locale::global(std::locale(""));
+	wcout.imbue(std::locale(""));
+//	ofs.imbue(locale("zh_CN.utf8"));
 
-	while(getline(ifs, line)){
+//	ofs.open("ripepage.lib", ios::app | ios::out);
 
-		frisoFile(line);
+	wstring pageline;
+	wstring::iterator iter;
 
+//	ofs << "<doc>" << endl
+//		<< "<docid>" << ++i << "</docid>" << endl
+//		<< "<url>" << path << "</url>" << endl
+//		<< "<title>";
+
+	while(getline(ifs, pageline)){
+
+		flag = 0;
+		for(iter = pageline.begin();iter != pageline.end();++iter){
+
+			if(*iter == L'】' || *iter == L'【')
+				*iter = ' ';	
+			wcout << *iter;
+
+		}
+	//	wcout << *iter;
+	//	ofs << pageline.c_str();
+	//	for(iter = pageline.begin();iter != pageline.end();++iter){
+
+		//	if(flag)
+//			string chr(iter -> begin());
+//				ofs << chr;
+	//		if(*iter == L'题')
+	//			flag = 1;		
+//		}
+		
+	//	ofs << pageline;
+
+	//	wcout << pageline << endl;
+		
 	}
 
-	ifs.close();
+//	ofs << "</title>" << endl
+//		<< "</doc>" << endl;
 
+//	ofs.close();
+	ifs.close();
 
 }
 
@@ -131,17 +158,8 @@ int main(int argc, char **argv)
 	}
 
 
-	getDir(argv[1]);
+	getDir(argv[1]);	
 
-	ofstream ofs("dictmap.txt");
-
-	for(map<string, int>::iterator miter = wcMap.begin();miter != wcMap.end();++miter)
-	{
-		ofs << miter -> first << " " << miter -> second << endl;
-	}
-
-
-	ofs.close();
 	friso_free_task(task);
 	friso_free_config(config);
 	friso_free(friso);	
