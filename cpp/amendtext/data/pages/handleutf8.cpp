@@ -20,23 +20,47 @@ extern "C"
 #include<stdlib.h>
 
 #include<iostream>
-#include<vector>
 #include<map>
-#include<utility>
 #include<string>
 #include<fstream>
 #include<sstream>
-#include<algorithm>
+#include<vector>
+#include<cmath>
+
+#define PAGENUM 8272
 
 using namespace std;
-bool cmp(const pair<string, int> &a, const pair<string, int> &b);
 
-map<string, vector<string> > pageMap;
-char line[40480];
+map<string, int> wcMap;
+map<string, int> wordDF;
+map<string, map<string, int> > wordTF;
+map<string, int> wordTFinit;
+vector<string> vecpath;
+
+static int DFcnt;
+static string tmpword;
+
+char line[60480];
 
 friso_t friso = friso_new();
 friso_config_t config = friso_new_config();
 friso_task_t task = friso_new_task();
+
+
+void getDir(char *path, int mode);
+void handleFile(int mode);
+
+void initWordDF()
+{
+	map<string, int>::const_iterator iter = wcMap.begin();
+	for(;iter != wcMap.end();++iter){
+
+		DFcnt = 0;
+		tmpword = iter -> first;
+		handleFile(1);
+		wordDF.insert(make_pair(tmpword, DFcnt));
+	}	
+}
 
 static fstring getLine(const char *str, fstring __dst ) 
 {
@@ -53,59 +77,56 @@ static fstring getLine(const char *str, fstring __dst )
 	return ( c == EOF && cs == __dst ) ? NULL : __dst;
 }
 
-bool cmp(const pair<string, int> &a, const pair<string, int> &b)
+int frisoFile(string &text, int mode, const char *path)
 {
-	return a.second > b.second;
-}
+	memset(line, 0, sizeof(line));
+	getLine(text.c_str(), line);
+	friso_set_text(task, line);
 
-void handleFile(char *path)
-{
-	ifstream ifs(path);
+	while(NULL != (config -> next_token(friso, config, task))){
 
-	string pageline;
-	vector<string> pagetop;
-	map<string, int> wordmap;
+		if(mode == 0){
 
-	while(getline(ifs, pageline)){
+			++wcMap[task -> token -> word];
+			++wordTFinit[task -> token -> word];
 
-		memset(line, 0, sizeof(line));
-		getLine(pageline.c_str(), line);
-		friso_set_text(task, line);
+		}else if(mode == 1){
 
-		while(NULL != (config -> next_token(friso, config, task))){
+			if(task -> token -> word == tmpword){
 
-			++wordmap[task -> token -> word];
+				++DFcnt;
+				return 1;
+			}
 		}
 	}
 
-	//sort map
-	
-	vector<pair<string, int> > pairvec;
-	vector<pair<string, int> >::const_iterator pairveciter;
-
-	for(map<string, int>::const_iterator iter = wordmap.begin();iter != wordmap.end();++iter){
-
-		pairvec.push_back(make_pair(iter->first, iter->second));
-	}
-
-	sort(pairvec.begin(), pairvec.end(), cmp);
-
-	pairveciter = pairvec.begin();
-	int end = pairvec.size();
-	if(end > 20){
-		end = 20;
-	}
-	for(int i = 0;i != end;++pairveciter, ++i){
-
-		pagetop.push_back(pairveciter -> first);
-	}
-
-	pageMap.insert(make_pair(path, pagetop));
-	ifs.close();
-
+	return 0;
 }
 
-void getDir(char *path)
+
+
+void handleFile(int mode)
+{
+	vector<string>::const_iterator iter;
+	for(iter = vecpath.begin();iter != vecpath.end();++iter){
+
+		ifstream ifs((*iter).c_str());
+		string line;
+
+		while(getline(ifs, line)){
+
+			if(frisoFile(line, mode, (*iter).c_str()) == 1 && mode == 1)
+				break;
+		}
+
+		wordTF.insert(make_pair(*iter, wordTFinit));
+		wordTFinit.clear();
+
+		ifs.close();
+	}
+}
+
+void getDir(char *path, int mode)
 {
 	char fpath[128];
 	DIR *pDIR;
@@ -117,6 +138,7 @@ void getDir(char *path)
 		exit(EXIT_FAILURE);
 	}
 
+	cout << path << endl;
 	chdir(path);
 
 	while(NULL != (dirInfo = readdir(pDIR))){
@@ -129,11 +151,10 @@ void getDir(char *path)
 
 		if(DT_DIR & dirInfo -> d_type){
 
-			getDir(fpath);
+			getDir(fpath, mode);
 		}
-
-		cout << fpath << endl;
-		handleFile(fpath);
+		//	cout << fpath << endl;
+		//	handleFile(fpath, mode);
 	}
 
 	chdir("..");
@@ -141,42 +162,67 @@ void getDir(char *path)
 	closedir(pDIR);
 }
 
-void delRepeatPage()
+void initpath(char *path)
 {
-	map<string, vector<string> >::iterator map_iter, map_iternext, tmpiter;
-	map_iter =  pageMap.begin();
+	ifstream ifs(path);
+	string line;
+	while(getline(ifs, line)){
+
+		vecpath.push_back(line);
+	}
+	ifs.close();
+}
+
+void initinvert()
+{
+	map<int, double> wordQZ;
+	vector<int> numDoc;
+	double qz, sumqz;
 	int cnt;
-	int total = 0;
+	map<string, int>::const_iterator iter = wcMap.begin();
+	vector<string>::const_iterator veciter;
 
-	for(;map_iter != pageMap.end();++map_iter){
+	map<string, map<string, int> >::const_iterator TFiter;
+	map<string, int>::const_iterator TFintiter;
+	map<string, int>::const_iterator DFiter;
 
-		tmpiter = map_iter;
-		for(map_iternext = ++tmpiter;map_iternext != pageMap.end();++map_iternext){
+	ofstream ofs("invert.lib");
 
-			cnt = 0;
-			vector<string>::iterator vec_iter, vec_iternext;
-			vec_iter = (map_iter -> second).begin();
-			vec_iternext = (map_iternext -> second).begin();
+	for(;iter != wcMap.end();++iter){
+	
+		cnt = 0;
+		wordQZ.clear();
+		numDoc.clear();
+		sumqz = 0;
+		ofs << iter -> first << " ";
+		for(veciter = vecpath.begin();veciter != vecpath.end();++veciter){
+			
+			++cnt;
+			TFiter = wordTF.find(*veciter);
+			TFintiter = (TFiter -> second).find(iter -> first);
+			DFiter = wordDF.find(iter -> first);
+			if(TFintiter == (TFiter -> second).end())
+				continue;
+			
+			qz = (TFintiter -> second) * log(PAGENUM / (DFiter -> second));
+			sumqz += qz * qz;
+			wordQZ.insert(make_pair(cnt, qz));
+			numDoc.push_back(TFintiter -> second);
+		}
 
-			for(;vec_iter != (map_iter -> second).end() && vec_iternext != (map_iternext -> second).end();++vec_iter, ++vec_iternext){
+		vector<int>::const_iterator viter = numDoc.begin();
 
-				if(*vec_iter == *vec_iternext)
-					++cnt;
-			}
-			//jude
+		for(map<int, double>::const_iterator miter = wordQZ.begin();
+			miter != wordQZ.end();
+			++miter, ++viter){
 
-			if(cnt >= 15 ){
+			ofs << miter -> first << " " << *viter << " " << (miter -> second) / sqrt(sumqz) << " ";
+		}
 
-				unlink((map_iternext -> first).c_str());
-				cout << "del repeat file: " << map_iternext -> first << " " << "times: " << cnt << endl;
-				pageMap.erase(map_iternext);
-				++total;
-			}
-		}	
+		ofs << endl;
 	}
 
-	cout << "totle del repeat pages: " << total << endl;
-	
+	ofs.close();
 }
 
 int main(int argc, char **argv)
@@ -189,9 +235,20 @@ int main(int argc, char **argv)
 	}
 
 
-	getDir(argv[1]);
+	//	getDir(argv[1], 0);
+	initpath(argv[1]);
+	handleFile(0);
+	initWordDF();
+	initinvert();
 
-	delRepeatPage();	
+
+	map<string, int>::const_iterator iter = wcMap.begin();
+	iter = wordDF.begin();
+	for(;iter != wordDF.end();++iter){
+
+		cout << iter -> first << " " << iter -> second << endl;
+	}
+
 
 	friso_free_task(task);
 	friso_free_config(config);
